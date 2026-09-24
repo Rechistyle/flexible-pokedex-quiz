@@ -1,0 +1,23 @@
+{
+ "_comment": "Secciones que componen cada generación en el quiz Generations (mismo criterio que la original).",
+ "generations": {
+  "1": ["kanto"
+  ],
+  "2": ["johto"
+  ],
+  "3": ["hoenn"
+  ],
+  "4": ["sinnoh"
+  ],
+  "5": ["unova"
+  ],
+  "6": ["kalos", "megakalos", "megahoenn"
+  ],
+  "7": ["alola", "unknown"
+  ],
+  "8": ["galar", "gmax", "hisui"
+  ],
+  "9": ["paldea", "paldeadlc", "megalumiose", "megahyperspace"
+  ]
+ }
+}

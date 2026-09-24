@@ -1,0 +1,17 @@
+{
+ "_comment": "Categorías por especie base. exceptions = formas que la web original deja fuera de su categoría.",
+ "categories": {
+  "sub-legendary": ["articuno", "zapdos", "moltres", "raikou", "entei", "suicune", "regirock", "regice", "registeel", "latias", "latios", "uxie", "mesprit", "azelf", "heatran", "regigigas", "cresselia", "cobalion", "terrakion", "virizion", "tornadus", "thundurus", "landorus", "typenull", "silvally", "tapukoko", "tapulele", "tapubulu", "tapufini", "kubfu", "urshifu", "regieleki", "regidrago", "glastrier", "spectrier", "enamorus", "wochien", "chienpao", "tinglu", "chiyu", "okidogi", "munkidori", "fezandipiti", "ogerpon"
+  ],
+  "legendary": ["mewtwo", "lugia", "hooh", "kyogre", "groudon", "rayquaza", "dialga", "palkia", "giratina", "reshiram", "zekrom", "kyurem", "xerneas", "yveltal", "zygarde", "cosmog", "cosmoem", "solgaleo", "lunala", "necrozma", "zacian", "zamazenta", "eternatus", "calyrex", "koraidon", "miraidon", "terapagos"
+  ],
+  "mythical": ["mew", "celebi", "jirachi", "deoxys", "phione", "manaphy", "darkrai", "shaymin", "arceus", "victini", "keldeo", "meloetta", "genesect", "diancie", "hoopa", "volcanion", "magearna", "marshadow", "zeraora", "meltan", "melmetal", "zarude", "pecharunt"
+  ],
+  "ultrabeast": ["nihilego", "buzzwole", "pheromosa", "xurkitree", "celesteela", "kartana", "guzzlord", "poipole", "naganadel", "stakataka", "blacephalon"
+  ],
+  "paradox": ["greattusk", "screamtail", "brutebonnet", "fluttermane", "slitherwing", "sandyshocks", "irontreads", "ironbundle", "ironhands", "ironjugulis", "ironmoth", "ironthorns", "roaringmoon", "ironvaliant", "walkingwake", "ironleaves", "gougingfire", "ragingbolt", "ironboulder", "ironcrown"
+  ]
+ },
+ "exceptions": ["magearnaoriginal", "miraidonlowpower"
+ ]
+}

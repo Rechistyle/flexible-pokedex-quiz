@@ -1,0 +1,48 @@
+{
+ "_comment": "Nombres de PokéAPI cuando no se deducen del id. species: especie base -> especie PokéAPI. forms: id -> pokemon-form. types: id -> tipos fijados a mano (cuando PokéAPI no tiene la forma).",
+ "species": {},
+ "forms": {
+  "kyuremblackactive": "kyurem-black",
+  "kyuremwhiteactive": "kyurem-white",
+  "meowsticf": "meowstic-female",
+  "indeedeef": "indeedee-female",
+  "basculegionf": "basculegion-female",
+  "oinkolognef": "oinkologne-female",
+  "xerneasinactive": "xerneas",
+  "necrozmaduskmane": "necrozma-dusk",
+  "necrozmadawnwings": "necrozma-dawn",
+  "marshadowzenith": "marshadow",
+  "darmanitangalar": "darmanitan-galar-standard",
+  "darmanitangalarzen": "darmanitan-galar-zen",
+  "calyrexicerider": "calyrex-ice",
+  "calyrexshadowrider": "calyrex-shadow",
+  "toxtricitygmax": "toxtricity-amped-gmax",
+  "urshifugmax": "urshifu-single-strike-gmax",
+  "mausholdofthree": "maushold-family-of-three",
+  "taurospaldea": "tauros-paldea-combat-breed",
+  "taurospaldeablaze": "tauros-paldea-blaze-breed",
+  "taurospaldeaaqua": "tauros-paldea-aqua-breed",
+  "koraidonlimited": "koraidon-limited-build",
+  "miraidonlowpower": "miraidon-low-power-mode",
+  "ogerpontealmask": "ogerpon",
+  "ogerponwellspring": "ogerpon-wellspring-mask",
+  "ogerponwellspringmask": "ogerpon-wellspring-mask",
+  "ogerponhearthflame": "ogerpon-hearthflame-mask",
+  "ogerponhearthflamemask": "ogerpon-hearthflame-mask",
+  "ogerponcornerstone": "ogerpon-cornerstone-mask",
+  "ogerponcornerstonemask": "ogerpon-cornerstone-mask",
+  "terapagosnormal": "terapagos",
+  "terapagos": "terapagos-terastal",
+  "pecharuntshell": "pecharunt",
+  "floetteeternalmega": "floette-mega",
+  "zygardecompletemega": "zygarde-mega",
+  "meowsticmega": "meowstic-male-mega",
+  "tatsugirimega": "tatsugiri-curly-mega"
+ },
+ "types": {
+  "rotomstereo": [
+   "electric",
+   "normal"
+  ]
+ }
+}

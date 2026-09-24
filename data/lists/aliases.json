@@ -1,0 +1,11 @@
+{
+ "_comment": "Nombres especiales aceptados que equivalen a otra especie.",
+ "aliases": {
+  "peakychu": "pikachu",
+  "mosslax": "snorlax",
+  "chefdente": "greedent",
+  "smearguru": "smeargle",
+  "professor": "tangrowth",
+  "tinkmaster": "tinkaton"
+ }
+}

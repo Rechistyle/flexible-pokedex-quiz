@@ -1,0 +1,124 @@
+{
+ "_comment": "Secciones del layout (mismo reparto que pkmnquiz.com). Entrada = id o id:especieBase. column = columna del layout de 5 columnas.",
+ "sections": [
+  {
+   "key": "kanto",
+   "title": "Kanto",
+   "column": 1,
+   "entries": ["bulbasaur", "ivysaur", "venusaur", "charmander", "charmeleon", "charizard", "squirtle", "wartortle", "blastoise", "caterpie", "metapod", "butterfree", "weedle", "kakuna", "beedrill", "pidgey", "pidgeotto", "pidgeot", "rattata", "raticate", "spearow", "fearow", "ekans", "arbok", "pikachu", "raichu", "sandshrew", "sandslash", "nidoranf", "nidorina", "nidoqueen", "nidoranm", "nidorino", "nidoking", "clefairy", "clefable", "vulpix", "ninetales", "jigglypuff", "wigglytuff", "zubat", "golbat", "oddish", "gloom", "vileplume", "paras", "parasect", "venonat", "venomoth", "diglett", "dugtrio", "meowth", "persian", "psyduck", "golduck", "mankey", "primeape", "growlithe", "arcanine", "poliwag", "poliwhirl", "poliwrath", "abra", "kadabra", "alakazam", "machop", "machoke", "machamp", "bellsprout", "weepinbell", "victreebel", "tentacool", "tentacruel", "geodude", "graveler", "golem", "ponyta", "rapidash", "slowpoke", "slowbro", "magnemite", "magneton", "farfetchd", "doduo", "dodrio", "seel", "dewgong", "grimer", "muk", "shellder", "cloyster", "gastly", "haunter", "gengar", "onix", "drowzee", "hypno", "krabby", "kingler", "voltorb", "electrode", "exeggcute", "exeggutor", "cubone", "marowak", "hitmonlee", "hitmonchan", "lickitung", "koffing", "weezing", "rhyhorn", "rhydon", "chansey", "tangela", "kangaskhan", "horsea", "seadra", "goldeen", "seaking", "staryu", "starmie", "mrmime", "scyther", "jynx", "electabuzz", "magmar", "pinsir", "tauros", "magikarp", "gyarados", "lapras", "ditto", "eevee", "vaporeon", "jolteon", "flareon", "porygon", "omanyte", "omastar", "kabuto", "kabutops", "aerodactyl", "snorlax", "articuno", "zapdos", "moltres", "dratini", "dragonair", "dragonite", "mewtwo", "mew"
+   ]
+  },
+  {
+   "key": "johto",
+   "title": "Johto",
+   "column": 1,
+   "entries": ["chikorita", "bayleef", "meganium", "cyndaquil", "quilava", "typhlosion", "totodile", "croconaw", "feraligatr", "sentret", "furret", "hoothoot", "noctowl", "ledyba", "ledian", "spinarak", "ariados", "crobat", "chinchou", "lanturn", "pichu", "cleffa", "igglybuff", "togepi", "togetic", "natu", "xatu", "mareep", "flaaffy", "ampharos", "bellossom", "marill", "azumarill", "sudowoodo", "politoed", "hoppip", "skiploom", "jumpluff", "aipom", "sunkern", "sunflora", "yanma", "wooper", "quagsire", "espeon", "umbreon", "murkrow", "slowking", "misdreavus", "unown", "wobbuffet", "girafarig", "pineco", "forretress", "dunsparce", "gligar", "steelix", "snubbull", "granbull", "qwilfish", "scizor", "shuckle", "heracross", "sneasel", "teddiursa", "ursaring", "slugma", "magcargo", "swinub", "piloswine", "corsola", "remoraid", "octillery", "delibird", "mantine", "skarmory", "houndour", "houndoom", "kingdra", "phanpy", "donphan", "porygon2", "stantler", "smeargle", "tyrogue", "hitmontop", "smoochum", "elekid", "magby", "miltank", "blissey", "raikou", "entei", "suicune", "larvitar", "pupitar", "tyranitar", "lugia", "hooh", "celebi"
+   ]
+  },
+  {
+   "key": "hoenn",
+   "title": "Hoenn",
+   "column": 2,
+   "entries": ["treecko", "grovyle", "sceptile", "torchic", "combusken", "blaziken", "mudkip", "marshtomp", "swampert", "poochyena", "mightyena", "zigzagoon", "linoone", "wurmple", "silcoon", "beautifly", "cascoon", "dustox", "lotad", "lombre", "ludicolo", "seedot", "nuzleaf", "shiftry", "taillow", "swellow", "wingull", "pelipper", "ralts", "kirlia", "gardevoir", "surskit", "masquerain", "shroomish", "breloom", "slakoth", "vigoroth", "slaking", "nincada", "ninjask", "shedinja", "whismur", "loudred", "exploud", "makuhita", "hariyama", "azurill", "nosepass", "skitty", "delcatty", "sableye", "mawile", "aron", "lairon", "aggron", "meditite", "medicham", "electrike", "manectric", "plusle", "minun", "volbeat", "illumise", "roselia", "gulpin", "swalot", "carvanha", "sharpedo", "wailmer", "wailord", "numel", "camerupt", "torkoal", "spoink", "grumpig", "spinda", "trapinch", "vibrava", "flygon", "cacnea", "cacturne", "swablu", "altaria", "zangoose", "seviper", "lunatone", "solrock", "barboach", "whiscash", "corphish", "crawdaunt", "baltoy", "claydol", "lileep", "cradily", "anorith", "armaldo", "feebas", "milotic", "castform", "castformsunny:castform", "castformrainy:castform", "castformsnowy:castform", "kecleon", "shuppet", "banette", "duskull", "dusclops", "tropius", "chimecho", "absol", "wynaut", "snorunt", "glalie", "spheal", "sealeo", "walrein", "clamperl", "huntail", "gorebyss", "relicanth", "luvdisc", "bagon", "shelgon", "salamence", "beldum", "metang", "metagross", "regirock", "regice", "registeel", "latias", "latios", "kyogre", "groudon", "rayquaza", "jirachi", "deoxys", "deoxysattack:deoxys", "deoxysdefense:deoxys", "deoxysspeed:deoxys"
+   ]
+  },
+  {
+   "key": "sinnoh",
+   "title": "Sinnoh",
+   "column": 2,
+   "entries": ["turtwig", "grotle", "torterra", "chimchar", "monferno", "infernape", "piplup", "prinplup", "empoleon", "starly", "staravia", "staraptor", "bidoof", "bibarel", "kricketot", "kricketune", "shinx", "luxio", "luxray", "budew", "roserade", "cranidos", "rampardos", "shieldon", "bastiodon", "burmy", "burmysandy:burmy", "burmytrash:burmy", "wormadam", "wormadamsandy:wormadam", "wormadamtrash:wormadam", "mothim", "combee", "vespiquen", "pachirisu", "buizel", "floatzel", "cherubi", "cherrim", "cherrimsunshine:cherrim", "shellos", "gastrodon", "ambipom", "drifloon", "drifblim", "buneary", "lopunny", "mismagius", "honchkrow", "glameow", "purugly", "chingling", "stunky", "skuntank", "bronzor", "bronzong", "bonsly", "mimejr", "happiny", "chatot", "spiritomb", "gible", "gabite", "garchomp", "munchlax", "riolu", "lucario", "hippopotas", "hippowdon", "skorupi", "drapion", "croagunk", "toxicroak", "carnivine", "finneon", "lumineon", "mantyke", "snover", "abomasnow", "weavile", "magnezone", "lickilicky", "rhyperior", "tangrowth", "electivire", "magmortar", "togekiss", "yanmega", "leafeon", "glaceon", "gliscor", "mamoswine", "porygonz", "gallade", "probopass", "dusknoir", "froslass", "rotom", "rotomheat:rotom", "rotomwash:rotom", "rotommow:rotom", "rotomfrost:rotom", "rotomfan:rotom", "rotomstereo:rotom", "uxie", "mesprit", "azelf", "dialga", "palkia", "heatran", "regigigas", "giratina", "giratinaorigin:giratina", "cresselia", "phione", "manaphy", "darkrai", "shaymin", "shayminsky:shaymin", "arceus", "arceuswater:arceus", "arceusgrass:arceus", "arceusfire:arceus", "arceuselectric:arceus", "arceusice:arceus", "arceusground:arceus", "arceusflying:arceus", "arceusfighting:arceus", "arceuspoison:arceus", "arceuspsychic:arceus", "arceusdark:arceus", "arceusbug:arceus", "arceusrock:arceus", "arceusghost:arceus", "arceussteel:arceus", "arceusdragon:arceus", "arceusfairy:arceus"
+   ]
+  },
+  {
+   "key": "unova",
+   "title": "Unova",
+   "column": 3,
+   "entries": ["victini", "snivy", "servine", "serperior", "tepig", "pignite", "emboar", "oshawott", "dewott", "samurott", "patrat", "watchog", "lillipup", "herdier", "stoutland", "purrloin", "liepard", "pansage", "simisage", "pansear", "simisear", "panpour", "simipour", "munna", "musharna", "pidove", "tranquill", "unfezant", "blitzle", "zebstrika", "roggenrola", "boldore", "gigalith", "woobat", "swoobat", "drilbur", "excadrill", "audino", "timburr", "gurdurr", "conkeldurr", "tympole", "palpitoad", "seismitoad", "throh", "sawk", "sewaddle", "swadloon", "leavanny", "venipede", "whirlipede", "scolipede", "cottonee", "whimsicott", "petilil", "lilligant", "basculin", "basculinbluestriped:basculin", "sandile", "krokorok", "krookodile", "darumaka", "darmanitan", "darmanitanzen:darmanitan", "maractus", "dwebble", "crustle", "scraggy", "scrafty", "sigilyph", "yamask", "cofagrigus", "tirtouga", "carracosta", "archen", "archeops", "trubbish", "garbodor", "zorua", "zoroark", "minccino", "cinccino", "gothita", "gothorita", "gothitelle", "solosis", "duosion", "reuniclus", "ducklett", "swanna", "vanillite", "vanillish", "vanilluxe", "deerling", "sawsbuck", "emolga", "karrablast", "escavalier", "foongus", "amoonguss", "frillish", "jellicent", "alomomola", "joltik", "galvantula", "ferroseed", "ferrothorn", "klink", "klang", "klinklang", "tynamo", "eelektrik", "eelektross", "elgyem", "beheeyem", "litwick", "lampent", "chandelure", "axew", "fraxure", "haxorus", "cubchoo", "beartic", "cryogonal", "shelmet", "accelgor", "stunfisk", "mienfoo", "mienshao", "druddigon", "golett", "golurk", "pawniard", "bisharp", "bouffalant", "rufflet", "braviary", "vullaby", "mandibuzz", "heatmor", "durant", "deino", "zweilous", "hydreigon", "larvesta", "volcarona", "cobalion", "terrakion", "virizion", "tornadus", "tornadustherian:tornadus", "thundurus", "thundurustherian:thundurus", "reshiram", "zekrom", "landorus", "landorustherian:landorus", "kyurem", "kyuremblack:kyurem", "kyuremblackactive:kyurem", "kyuremwhite:kyurem", "kyuremwhiteactive:kyurem", "keldeo", "keldeoresolute:keldeo", "meloetta", "meloettapirouette:meloetta", "genesect", "genesectburn:genesect", "genesectchill:genesect", "genesectshock:genesect", "genesectdouse:genesect"
+   ]
+  },
+  {
+   "key": "kalos",
+   "title": "Kalos",
+   "column": 3,
+   "entries": ["chespin", "quilladin", "chesnaught", "fennekin", "braixen", "delphox", "froakie", "frogadier", "greninja", "bunnelby", "diggersby", "fletchling", "fletchinder", "talonflame", "scatterbug", "spewpa", "vivillon", "litleo", "pyroar", "flabebe", "floette", "florges", "skiddo", "gogoat", "pancham", "pangoro", "furfrou", "espurr", "meowstic", "meowsticf:meowstic", "honedge", "doublade", "aegislash", "spritzee", "aromatisse", "swirlix", "slurpuff", "inkay", "malamar", "binacle", "barbaracle", "skrelp", "dragalge", "clauncher", "clawitzer", "helioptile", "heliolisk", "tyrunt", "tyrantrum", "amaura", "aurorus", "sylveon", "hawlucha", "dedenne", "carbink", "goomy", "sliggoo", "goodra", "klefki", "phantump", "trevenant", "pumpkaboo", "gourgeist", "bergmite", "avalugg", "noibat", "noivern", "xerneas", "xerneasinactive:xerneas", "yveltal", "zygarde", "diancie", "hoopa", "hoopaunbound:hoopa", "volcanion"
+   ]
+  },
+  {
+   "key": "megakalos",
+   "title": "Mega Evolution - Kalos",
+   "column": 3,
+   "entries": ["venusaurmega:venusaur", "charizardmegax:charizard", "charizardmegay:charizard", "blastoisemega:blastoise", "alakazammega:alakazam", "gengarmega:gengar", "kangaskhanmega:kangaskhan", "pinsirmega:pinsir", "gyaradosmega:gyarados", "aerodactylmega:aerodactyl", "mewtwomegax:mewtwo", "mewtwomegay:mewtwo", "ampharosmega:ampharos", "scizormega:scizor", "heracrossmega:heracross", "houndoommega:houndoom", "tyranitarmega:tyranitar", "blazikenmega:blaziken", "gardevoirmega:gardevoir", "mawilemega:mawile", "aggronmega:aggron", "medichammega:medicham", "manectricmega:manectric", "banettemega:banette", "absolmega:absol", "garchompmega:garchomp", "lucariomega:lucario", "abomasnowmega:abomasnow"
+   ]
+  },
+  {
+   "key": "megahoenn",
+   "title": "Mega Evolution - Hoenn",
+   "column": 3,
+   "entries": ["beedrillmega:beedrill", "pidgeotmega:pidgeot", "slowbromega:slowbro", "steelixmega:steelix", "sceptilemega:sceptile", "swampertmega:swampert", "sableyemega:sableye", "sharpedomega:sharpedo", "cameruptmega:camerupt", "altariamega:altaria", "glaliemega:glalie", "salamencemega:salamence", "metagrossmega:metagross", "latiasmega:latias", "latiosmega:latios", "kyogreprimal:kyogre", "groudonprimal:groudon", "rayquazamega:rayquaza", "lopunnymega:lopunny", "gallademega:gallade", "audinomega:audino", "dianciemega:diancie"
+   ]
+  },
+  {
+   "key": "alola",
+   "title": "Alola",
+   "column": 4,
+   "entries": ["rowlet", "dartrix", "decidueye", "litten", "torracat", "incineroar", "popplio", "brionne", "primarina", "pikipek", "trumbeak", "toucannon", "yungoos", "gumshoos", "rattataalola:rattata", "raticatealola:raticate", "raichualola:raichu", "grubbin", "charjabug", "vikavolt", "meowthalola:meowth", "persianalola:persian", "grimeralola:grimer", "mukalola:muk", "crabrawler", "crabominable", "diglettalola:diglett", "dugtrioalola:dugtrio", "oricorio", "oricoriopompom:oricorio", "oricoriopau:oricorio", "oricoriosensu:oricorio", "cutiefly", "ribombee", "rockruff", "lycanroc", "lycanrocmidnight:lycanroc", "lycanrocdusk:lycanroc", "wishiwashi", "wishiwashischool:wishiwashi", "mareanie", "toxapex", "mudbray", "mudsdale", "dewpider", "araquanid", "fomantis", "lurantis", "morelull", "shiinotic", "salandit", "salazzle", "marowakalola:marowak", "stufful", "bewear", "bounsweet", "steenee", "tsareena", "comfey", "oranguru", "passimian", "wimpod", "golisopod", "sandygast", "palossand", "pyukumuku", "typenull", "silvally", "silvallywater:silvally", "silvallygrass:silvally", "silvallyfire:silvally", "silvallyelectric:silvally", "silvallyice:silvally", "silvallyground:silvally", "silvallyflying:silvally", "silvallyfighting:silvally", "silvallypoison:silvally", "silvallypsychic:silvally", "silvallydark:silvally", "silvallybug:silvally", "silvallyrock:silvally", "silvallyghost:silvally", "silvallysteel:silvally", "silvallydragon:silvally", "silvallyfairy:silvally", "zygarde10:zygarde", "zygardecomplete:zygarde", "minior", "komala", "turtonator", "togedemaru", "geodudealola:geodude", "graveleralola:graveler", "golemalola:golem", "mimikyu", "bruxish", "drampa", "sandshrewalola:sandshrew", "sandslashalola:sandslash", "vulpixalola:vulpix", "ninetalesalola:ninetales", "dhelmise", "exeggutoralola:exeggutor", "jangmoo", "hakamoo", "kommoo", "tapukoko", "tapulele", "tapubulu", "tapufini", "cosmog", "cosmoem", "solgaleo", "lunala", "nihilego", "buzzwole", "pheromosa", "xurkitree", "celesteela", "kartana", "guzzlord", "necrozma", "necrozmaduskmane:necrozma", "necrozmadawnwings:necrozma", "necrozmaultra:necrozma", "magearna", "magearnaoriginal:magearna", "marshadow", "marshadowzenith:marshadow", "poipole", "naganadel", "stakataka", "blacephalon", "zeraora"
+   ]
+  },
+  {
+   "key": "unknown",
+   "title": "Unknown",
+   "column": 4,
+   "entries": ["meltan", "melmetal"
+   ]
+  },
+  {
+   "key": "galar",
+   "title": "Galar",
+   "column": 4,
+   "entries": ["grookey", "thwackey", "rillaboom", "scorbunny", "raboot", "cinderace", "sobble", "drizzile", "inteleon", "skwovet", "greedent", "rookidee", "corvisquire", "corviknight", "blipbug", "dottler", "orbeetle", "nickit", "thievul", "gossifleur", "eldegoss", "wooloo", "dubwool", "chewtle", "drednaw", "yamper", "boltund", "rolycoly", "carkol", "coalossal", "applin", "flapple", "appletun", "stunfiskgalar:stunfisk", "silicobra", "sandaconda", "cramorant", "arrokuda", "barraskewda", "toxel", "toxtricity", "toxtricitylowkey:toxtricity", "sizzlipede", "centiskorch", "clobbopus", "grapploct", "ponytagalar:ponyta", "rapidashgalar:rapidash", "sinistea", "polteageist", "hatenna", "hattrem", "hatterene", "impidimp", "morgrem", "grimmsnarl", "weezinggalar:weezing", "zigzagoongalar:zigzagoon", "linoonegalar:linoone", "obstagoon", "meowthgalar:meowth", "perrserker", "corsolagalar:corsola", "cursola", "farfetchdgalar:farfetchd", "sirfetchd", "mrmimegalar:mrmime", "mrrime", "yamaskgalar:yamask", "runerigus", "milcery", "alcremie", "falinks", "pincurchin", "snom", "frosmoth", "darumakagalar:darumaka", "darmanitangalar:darmanitan", "darmanitangalarzen:darmanitan", "stonjourner", "eiscue", "indeedee", "indeedeef:indeedee", "morpeko", "cufant", "copperajah", "dracozolt", "arctozolt", "dracovish", "arctovish", "duraludon", "dreepy", "drakloak", "dragapult", "zacian", "zaciancrowned:zacian", "zamazenta", "zamazentacrowned:zamazenta", "eternatus", "slowpokegalar:slowpoke", "slowbrogalar:slowbro", "slowkinggalar:slowking", "kubfu", "urshifu", "urshifurapidstrike:urshifu", "zarude", "zarudedada:zarude", "regieleki", "regidrago", "articunogalar:articuno", "zapdosgalar:zapdos", "moltresgalar:moltres", "glastrier", "spectrier", "calyrex", "calyrexicerider:calyrex", "calyrexshadowrider:calyrex"
+   ]
+  },
+  {
+   "key": "gmax",
+   "title": "Gigantamax",
+   "column": 4,
+   "entries": ["venusaurgmax:venusaur", "charizardgmax:charizard", "blastoisegmax:blastoise", "butterfreegmax:butterfree", "pikachugmax:pikachu", "meowthgmax:meowth", "machampgmax:machamp", "gengargmax:gengar", "kinglergmax:kingler", "laprasgmax:lapras", "eeveegmax:eevee", "snorlaxgmax:snorlax", "garbodorgmax:garbodor", "melmetalgmax:melmetal", "rillaboomgmax:rillaboom", "cinderacegmax:cinderace", "inteleongmax:inteleon", "corviknightgmax:corviknight", "orbeetlegmax:orbeetle", "drednawgmax:drednaw", "coalossalgmax:coalossal", "flapplegmax:flapple", "appletungmax:appletun", "sandacondagmax:sandaconda", "toxtricitygmax:toxtricity", "centiskorchgmax:centiskorch", "hatterenegmax:hatterene", "grimmsnarlgmax:grimmsnarl", "alcremiegmax:alcremie", "copperajahgmax:copperajah", "duraludongmax:duraludon", "urshifugmax:urshifu", "urshifurapidstrikegmax:urshifu", "eternatuseternamax:eternatus"
+   ]
+  },
+  {
+   "key": "hisui",
+   "title": "Hisui",
+   "column": 5,
+   "entries": ["decidueyehisui:decidueye", "typhlosionhisui:typhlosion", "samurotthisui:samurott", "wyrdeer", "kleavor", "lilliganthisui:lilligant", "ursaluna", "sliggoohisui:sliggoo", "goodrahisui:goodra", "growlithehisui:growlithe", "arcaninehisui:arcanine", "basculinwhitestriped:basculin", "basculegion", "basculegionf:basculegion", "voltorbhisui:voltorb", "electrodehisui:electrode", "sneaselhisui:sneasel", "sneasler", "qwilfishhisui:qwilfish", "overqwil", "avalugghisui:avalugg", "zoruahisui:zorua", "zoroarkhisui:zoroark", "braviaryhisui:braviary", "enamorus", "enamorustherian:enamorus", "dialgaorigin:dialga", "palkiaorigin:palkia"
+   ]
+  },
+  {
+   "key": "paldea",
+   "title": "Paldea",
+   "column": 5,
+   "entries": ["sprigatito", "floragato", "meowscarada", "fuecoco", "crocalor", "skeledirge", "quaxly", "quaxwell", "quaquaval", "lechonk", "oinkologne", "oinkolognef:oinkologne", "tarountula", "spidops", "nymble", "lokix", "pawmi", "pawmo", "pawmot", "tandemaus", "maushold", "mausholdofthree:maushold", "fidough", "dachsbun", "smoliv", "dolliv", "arboliva", "squawkabilly", "nacli", "naclstack", "garganacl", "charcadet", "armarouge", "ceruledge", "tadbulb", "bellibolt", "wattrel", "kilowattrel", "maschiff", "mabosstiff", "shroodle", "grafaiai", "taurospaldea:tauros", "taurospaldeablaze:tauros", "taurospaldeaaqua:tauros", "bramblin", "brambleghast", "toedscool", "toedscruel", "klawf", "capsakid", "scovillain", "rellor", "rabsca", "flittle", "espathra", "tinkatink", "tinkatuff", "tinkaton", "wiglett", "wugtrio", "bombirdier", "finizen", "palafin", "palafinhero:palafin", "varoom", "revavroom", "cyclizar", "orthworm", "glimmet", "glimmora", "greavard", "houndstone", "flamigo", "cetoddle", "cetitan", "veluza", "dondozo", "tatsugiri", "annihilape", "wooperpaldea:wooper", "clodsire", "farigiraf", "dudunsparce", "dudunsparcethreesegment:dudunsparce", "kingambit", "greattusk", "screamtail", "brutebonnet", "fluttermane", "slitherwing", "sandyshocks", "irontreads", "ironbundle", "ironhands", "ironjugulis", "ironmoth", "ironthorns", "frigibax", "arctibax", "baxcalibur", "gimmighoul", "gimmighoulroaming:gimmighoul", "gholdengo", "wochien", "chienpao", "tinglu", "chiyu", "roaringmoon", "ironvaliant", "koraidon", "koraidonlimited:koraidon", "miraidon", "miraidonlowpower:miraidon"
+   ]
+  },
+  {
+   "key": "paldeadlc",
+   "title": "Paldea Expeditions",
+   "column": 5,
+   "entries": ["walkingwake", "ironleaves", "dipplin", "poltchageist", "sinistcha", "ursalunabloodmoon:ursaluna", "okidogi", "munkidori", "fezandipiti", "ogerpon", "ogerpontealmask:ogerpon", "ogerponwellspring:ogerpon", "ogerponwellspringmask:ogerpon", "ogerponhearthflame:ogerpon", "ogerponhearthflamemask:ogerpon", "ogerponcornerstone:ogerpon", "ogerponcornerstonemask:ogerpon", "archaludon", "hydrapple", "gougingfire", "ragingbolt", "ironboulder", "ironcrown", "terapagosnormal:terapagos", "terapagos", "terapagosstellar:terapagos", "pecharunt", "pecharuntshell:pecharunt"
+   ]
+  },
+  {
+   "key": "megalumiose",
+   "title": "Mega Evolution - Lumiose",
+   "column": 5,
+   "entries": ["clefablemega:clefable", "victreebelmega:victreebel", "starmiemega:starmie", "dragonitemega:dragonite", "meganiummega:meganium", "feraligatrmega:feraligatr", "skarmorymega:skarmory", "froslassmega:froslass", "emboarmega:emboar", "excadrillmega:excadrill", "scolipedemega:scolipede", "scraftymega:scrafty", "eelektrossmega:eelektross", "chandeluremega:chandelure", "chesnaughtmega:chesnaught", "delphoxmega:delphox", "greninjamega:greninja", "pyroarmega:pyroar", "floetteeternalmega:floette", "malamarmega:malamar", "barbaraclemega:barbaracle", "dragalgemega:dragalge", "hawluchamega:hawlucha", "zygardecompletemega:zygarde", "drampamega:drampa", "falinksmega:falinks"
+   ]
+  },
+  {
+   "key": "megahyperspace",
+   "title": "Mega Evolution - Hyperspace",
+   "column": 5,
+   "entries": ["raichumegax:raichu", "raichumegay:raichu", "chimechomega:chimecho", "absolmegaz:absol", "staraptormega:staraptor", "garchompmegaz:garchomp", "lucariomegaz:lucario", "heatranmega:heatran", "darkraimega:darkrai", "golurkmega:golurk", "meowsticmega:meowstic", "crabominablemega:crabominable", "golisopodmega:golisopod", "magearnamega:magearna", "zeraoramega:zeraora", "scovillainmega:scovillain", "glimmoramega:glimmora", "tatsugirimega:tatsugiri", "baxcaliburmega:baxcalibur"
+   ]
+  }
+ ]
+}

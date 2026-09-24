@@ -1,0 +1,13 @@
+{
+  "name": "flexible-pokedex-quiz",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Pokémon quiz inspired by pkmnquiz.com with multi-generation selection",
+  "scripts": {
+    "build-data": "node scripts/build-data.js"
+  },
+  "devDependencies": {
+    "pngjs": "^7.0.0"
+  }
+}

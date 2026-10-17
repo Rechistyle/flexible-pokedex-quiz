@@ -52,9 +52,10 @@ function buildBoard(entries) {
       groups.get(e.base).push(e);
     }
     for (const [base, group] of groups) {
-      const frames = group.length > 1
+      const allFrames = group.length > 1
         ? group.map((e) => ({ src: spriteSrc(e.sprite), id: e.id }))
         : (group[0].cycle ?? [group[0].sprite]).map((f) => ({ src: spriteSrc(f), id: group[0].id }));
+      const frames = [...new Map(allFrames.map((f) => [f.src, f])).values()]; // sin dibujos repetidos
       const el = document.createElement('span');
       el.className = 'slot';
       const img = new Image();

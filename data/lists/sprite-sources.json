@@ -1,5 +1,5 @@
 {
- "_comment": "Origen de cada sprite cuando no basta la búsqueda automática (primero PokéSprite por nombre, luego el pack por nombre de especie). sheet = índice en las hojas mega-dimension-*.png (cuadrícula 5×5 de 32 px). pack = archivo del pack de iconos. none = sin sprite (marcador genérico). Formas sin icono propio (Rotom Stereo, Marshadow Zenith, Koraidon Limited, Miraidon Low-Power, Pecharunt Shell) usan el de la forma normal.",
+ "_comment": "Origen de cada sprite cuando no basta la búsqueda automática (primero PokéSprite por nombre, luego el pack por nombre de especie). sheet = índice en las hojas mega-dimension-*.png (cuadrícula 5×5 de 32 px). pack = archivo del pack de iconos. none = sin sprite (marcador genérico). Formas sin icono propio (Rotom Stereo, Marshadow Zenith, Koraidon Limited, Miraidon Low-Power, Pecharunt Shell) usan el de la forma normal. Kyurem Black/White Active no tienen icono propio: usan el de Black/White. Urshifu Rapid Strike comparte icono con Single Strike (como en el juego). Mimikyu Busted no tiene icono a la escala correcta: no rota.",
  "sheet": {
   "raichumegax": 0,
   "raichumegay": 1,
@@ -41,15 +41,14 @@
   "pyroar-f": "female/pyroar",
   "appletungmax": "flapple-gmax",
   "rotomstereo": "rotom",
-  "marshadowzenith": "marshadow"
+  "marshadowzenith": "marshadow",
+  "kyuremwhiteactive": "kyurem-white",
+  "kyurem-white-active": "kyurem-white",
+  "kyuremblackactive": "kyurem-black",
+  "kyurem-black-active": "kyurem-black",
+  "urshifurapidstrike": "urshifu"
  },
  "pack": {
-  "kyuremwhiteactive": "KYUREM_3",
-  "kyurem-white-active": "KYUREM_3",
-  "kyuremblackactive": "KYUREM_4",
-  "kyurem-black-active": "KYUREM_4",
-  "urshifurapidstrike": "URSHIFU_1",
-  "mimikyu-busted": "MIMIKYU_1",
   "oinkolognef": "OINKOLOGNE_1",
   "mausholdofthree": "MAUSHOLD_1",
   "maushold-of-three": "MAUSHOLD_1",
@@ -124,6 +123,7 @@
   "koraidon-limited",
   "miraidon-low-power",
   "unown-a",
-  "magearna-mega"
+  "magearna-mega",
+  "mimikyu-busted"
  ]
 }

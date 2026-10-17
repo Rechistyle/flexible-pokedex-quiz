@@ -300,13 +300,19 @@ async function main() {
     fs.writeFileSync(path.join(OUT_SPRITES, `missingno${i + 1}.png`), PNG.sync.write(img));
   });
   const spriteReport = { pokesprite: 0, pack: 0, 'mega-dimension': 0, missing: [] };
+  // Si dos formas de una especie tienen el mismo dibujo, comparten archivo
+  // (así la casilla no repite la imagen al rotar)
+  const seen = new Map(); // especie|png -> archivo
   const writeSprite = (id, base) => {
     const r = resolve(id, base);
     if (!r) return null;
+    const normal = PNG.sync.write(r.load(false));
+    const key = base + '|' + normal.toString('base64');
+    if (seen.has(key)) return seen.get(key);
     const file = id.toLowerCase() + '.png';
-    for (const shiny of [false, true]) {
-      fs.writeFileSync(path.join(OUT_SPRITES, shiny ? 'shiny' : 'normal', file), PNG.sync.write(r.load(shiny)));
-    }
+    fs.writeFileSync(path.join(OUT_SPRITES, 'normal', file), normal);
+    fs.writeFileSync(path.join(OUT_SPRITES, 'shiny', file), PNG.sync.write(r.load(true)));
+    seen.set(key, file);
     spriteReport[r.source]++;
     return file;
   };

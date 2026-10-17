@@ -4,54 +4,73 @@ import { Quiz } from './quiz.js';
 const $ = (id) => document.getElementById(id);
 const input = $('pokemon');
 const UNKNOWN = 'sprites/unknown.png';
+const CYCLE_MS = 2000;
 
 // Botones de idioma de respuesta (ENG/ESP/ITA van juntos porque casi todos los nombres coinciden)
 const LANG_GROUPS = [['ENG', 'ESP', 'ITA'], ['FRE'], ['GER'], ['KOR'], ['JPN'], ['CHT'], ['CHS']];
 const MISSED_LANGS = ['ENG', 'FRE', 'GER', 'ESP', 'ITA', 'KOR', 'JPN', 'CHT', 'CHS'];
 
 let data, quiz;
-const slotImg = new Map(); // id de casilla -> <img>
-const sectionEl = new Map(); // sección -> elemento
-const state = { started: false, over: false, timer: null, startTime: 0, elapsed: 0 };
+// Una casilla por especie y sección: sus formas comparten casilla y van rotando
+// { section, base, frames: [{ src, id }], img, state: null | 'named' | 'revealed', item }
+let slots = [];
+let slotsByBase = new Map();
+const sectionEl = new Map();
+const state = { started: false, over: false, timer: null, startTime: 0, elapsed: 0, tick: 0, missingno: false };
 let revealTimeouts = [];
 
-const spriteSrc = (entry) => `sprites/normal/${entry.sprite}`;
+const spriteSrc = (file) => `sprites/normal/${file}`;
 
 // ------------------------------------------------------------ arranque
 
 async function init() {
   data = await (await fetch('data/pokemon.json')).json();
   quiz = new Quiz(data);
-  buildBoxes();
   buildLanguageButtons();
   bindEvents();
+  setInterval(cycleSprites, CYCLE_MS);
   $('loading').hidden = true;
   $('menu').hidden = false;
 }
 
-function buildBoxes() {
+function buildBoard(entries) {
   const columns = [];
+  slots = [];
+  slotsByBase = new Map();
+  sectionEl.clear();
   for (const s of data.sections) {
+    const inSection = entries.filter((e) => e.section === s.key);
+    if (!inSection.length) continue;
     columns[s.column] ??= Object.assign(document.createElement('div'), { className: 'column' });
     const box = document.createElement('div');
     box.className = 'box section';
     box.innerHTML = `<h3>${s.title}</h3><div class="slots"></div>`;
-    const slots = box.lastChild;
-    for (const e of data.entries.filter((x) => x.section === s.key)) {
-      const slot = document.createElement('span');
-      slot.className = 'slot';
+
+    const groups = new Map();
+    for (const e of inSection) {
+      if (!groups.has(e.base)) groups.set(e.base, []);
+      groups.get(e.base).push(e);
+    }
+    for (const [base, group] of groups) {
+      const frames = group.length > 1
+        ? group.map((e) => ({ src: spriteSrc(e.sprite), id: e.id }))
+        : (group[0].cycle ?? [group[0].sprite]).map((f) => ({ src: spriteSrc(f), id: group[0].id }));
+      const el = document.createElement('span');
+      el.className = 'slot';
       const img = new Image();
       img.alt = '';
-      img.src = UNKNOWN;
-      img.className = 'empty';
-      slot.append(img);
-      slots.append(slot);
-      slotImg.set(e.id, img);
+      el.append(img);
+      box.lastChild.append(el);
+      const slot = { section: s.key, base, frames, img, state: null, item: null };
+      renderSlot(slot);
+      slots.push(slot);
+      if (!slotsByBase.has(base)) slotsByBase.set(base, []);
+      slotsByBase.get(base).push(slot);
     }
     sectionEl.set(s.key, box);
     columns[s.column].append(box);
   }
-  $('boxes').append(...columns.filter(Boolean));
+  $('boxes').replaceChildren(...columns.filter(Boolean));
 }
 
 function buildLanguageButtons() {
@@ -91,13 +110,42 @@ function buildLanguageButtons() {
   }
 }
 
+// ------------------------------------------------------------ casillas
+
+const frameOf = (slot) => slot.frames[state.tick % slot.frames.length];
+
+function renderSlot(slot) {
+  if (slot.state) {
+    slot.img.src = frameOf(slot).src;
+  } else {
+    slot.img.src = UNKNOWN;
+    slot.img.className = 'empty';
+  }
+}
+
+function showSlot(slot, newState, cls) {
+  slot.state = newState;
+  slot.img.className = cls;
+  renderSlot(slot);
+  const inSection = slots.filter((s) => s.section === slot.section);
+  if (inSection.every((s) => s.state)) sectionEl.get(slot.section).classList.add('outline');
+}
+
+// Cada 2 s, las casillas con varias formas pasan a la siguiente (y su nombre en "Missed names")
+function cycleSprites() {
+  state.tick++;
+  for (const slot of slots) {
+    if (slot.frames.length < 2) continue;
+    if (slot.state) slot.img.src = frameOf(slot).src;
+    if (slot.item) renderMissedItem(slot);
+  }
+}
+
 // ------------------------------------------------------------ quiz
 
 function startQuiz(name, entries) {
   quiz.setQuiz(name, entries);
-  const ids = new Set(entries.map((e) => e.id));
-  for (const [id, img] of slotImg) img.parentElement.hidden = !ids.has(id);
-  for (const [key, el] of sectionEl) el.hidden = !entries.some((e) => e.section === key);
+  buildBoard(entries);
   resetBoard();
   $('start').hidden = true;
   $('inputbox').classList.remove('shake');
@@ -112,11 +160,13 @@ function resetBoard() {
   state.started = false;
   state.over = false;
   state.elapsed = 0;
+  state.missingno = false;
   for (const timeout of revealTimeouts) clearTimeout(timeout);
   revealTimeouts = [];
-  for (const img of slotImg.values()) {
-    img.src = UNKNOWN;
-    img.className = 'empty';
+  for (const slot of slots) {
+    slot.state = null;
+    slot.item = null;
+    renderSlot(slot);
   }
   for (const el of sectionEl.values()) el.classList.remove('outline');
   $('missednames').hidden = true;
@@ -134,23 +184,21 @@ function renderScore() {
   $('total').textContent = quiz.maxScore;
 }
 
-function showSprite(id, cls) {
-  const img = slotImg.get(id);
-  img.src = spriteSrc(quiz.entryById.get(id));
-  img.className = cls;
-  const section = sectionEl.get(quiz.entryById.get(id).section);
-  const shown = [...section.querySelectorAll('.slot:not([hidden]) img')];
-  if (shown.every((i) => !i.src.endsWith(UNKNOWN))) section.classList.add('outline');
-}
-
 function onInput() {
   const value = input.value;
   if (!value.length || state.over) return;
+  if (['missingno', 'けつばん'].includes(value.toLowerCase()) && !state.missingno) {
+    input.value = '';
+    state.missingno = true;
+    missingnoGlitch();
+    return;
+  }
   const result = quiz.guess(value);
   if (result.ok) {
     input.value = '';
-    for (const id of result.ids) showSprite(id, 'zoom');
-    $('recentsprite').src = spriteSrc(quiz.entryById.get(result.ids[0]));
+    const baseSlots = slotsByBase.get(result.base);
+    for (const slot of baseSlots) showSlot(slot, 'named', 'zoom');
+    $('recentsprite').src = frameOf(baseSlots[0]).src;
     if (!state.started) startTimer();
     renderScore();
     if (quiz.complete) finish();
@@ -158,6 +206,23 @@ function onInput() {
     input.value = '';
     showMessage(result.message);
   }
+}
+
+// ------------------------------------------------------------ easter egg: MissingNo.
+
+// Mientras dure la partida, casillas al azar se convierten un momento en MissingNo.
+function missingnoGlitch() {
+  if (!state.missingno) return;
+  const slot = slots[Math.floor(Math.random() * slots.length)];
+  const roll = Math.random() * 100;
+  const cls = slot.img.className;
+  slot.img.className = '';
+  slot.img.src = `sprites/missingno${roll < 70 ? 1 : roll < 90 ? 2 : 3}.png`;
+  setTimeout(() => {
+    if (!slot.img.className) slot.img.className = cls; // si se acertó entretanto, ya tiene su clase
+    renderSlot(slot);
+    missingnoGlitch();
+  }, 300 + Math.random() * 2700);
 }
 
 // ------------------------------------------------------------ temporizador
@@ -189,15 +254,14 @@ function renderTimer() {
 
 // ------------------------------------------------------------ final
 
-
 function giveUp() {
   if (state.over) return;
   state.over = true;
   stopTimer();
   renderTimer();
   input.disabled = true;
-  quiz.missed().forEach((e, i) => {
-    revealTimeouts.push(setTimeout(() => showSprite(e.id, 'revealed'), 35 * (i + 1)));
+  slots.filter((s) => !s.state).forEach((slot, i) => {
+    revealTimeouts.push(setTimeout(() => showSlot(slot, 'revealed', 'revealed'), 35 * (i + 1)));
   });
   renderMissed();
 }
@@ -219,20 +283,20 @@ function finish() {
 function renderMissed() {
   const panel = $('panel');
   panel.innerHTML = '';
-  for (const s of data.sections) {
-    const missed = quiz.missed().filter((e) => e.section === s.key);
+  for (const key of sectionEl.keys()) {
+    const missed = slots.filter((s) => s.section === key && !s.state);
     if (!missed.length) continue;
     const group = document.createElement('div');
     group.className = 'box group';
-    for (const e of missed) {
+    for (const slot of missed) {
       const item = document.createElement('div');
       item.className = 'missed';
-      item.dataset.id = e.id;
       const img = new Image();
       img.alt = '';
-      img.src = spriteSrc(e);
       item.append(img, document.createTextNode(''));
       group.append(item);
+      slot.item = item;
+      renderMissedItem(slot);
     }
     panel.append(group);
   }
@@ -242,11 +306,15 @@ function renderMissed() {
   renderMissedLang();
 }
 
+function renderMissedItem(slot) {
+  const frame = frameOf(slot);
+  slot.item.firstChild.src = frame.src;
+  slot.item.lastChild.nodeValue = quiz.displayName(frame.id);
+}
+
 function renderMissedLang() {
   for (const b of $('missed-langs').children) b.classList.toggle('active', b.dataset.lang === quiz.currentLang);
-  for (const item of $('panel').querySelectorAll('.missed')) {
-    item.lastChild.nodeValue = quiz.displayName(item.dataset.id);
-  }
+  for (const slot of slots) if (slot.item) renderMissedItem(slot);
 }
 
 // ------------------------------------------------------------ avisos

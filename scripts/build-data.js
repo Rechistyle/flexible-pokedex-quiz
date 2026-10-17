@@ -294,6 +294,11 @@ async function main() {
   // Casilla vacía (Poké Ball) y marcador genérico para formas sin sprite
   fs.copyFileSync(path.join(POKESPRITE, 'unknown.png'), path.join(OUT_SPRITES, 'unknown.png'));
   fs.copyFileSync(path.join(POKESPRITE, 'unknown-gen5.png'), path.join(OUT_SPRITES, 'missing.png'));
+  // Easter egg de MissingNo. (sprites de Bulbagarden Archives)
+  ['Missingno_RB.png', 'Missingno_Y.png', 'Ghost_I.png'].forEach((f, i) => {
+    const img = fitToCanvas(readPNG(path.join(ROOT, 'assets-src', 'missingno', f)));
+    fs.writeFileSync(path.join(OUT_SPRITES, `missingno${i + 1}.png`), PNG.sync.write(img));
+  });
   const spriteReport = { pokesprite: 0, pack: 0, 'mega-dimension': 0, missing: [] };
   const writeSprite = (id, base) => {
     const r = resolve(id, base);

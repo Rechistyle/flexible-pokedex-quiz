@@ -53,4 +53,18 @@ q3.setQuiz('Gen 1', data.entries.filter((e) => e.generation === 1));
 assert.equal(q3.guess('chikorita').message, 'Chikorita is not part of this quiz');
 assert.equal(q3.guess('mew').ok, true);
 
+// Varias generaciones a la vez: exactamente las especies de Gen 1, 2 y 5
+const q4 = new Quiz(data);
+const gens = new Set([1, 2, 5]);
+q4.setQuiz('Gen 1 · 2 · 5', data.entries.filter((e) => gens.has(e.generation)));
+assert.equal(q4.maxScore, 151 + 100 + 156);
+assert.equal(q4.guess('snivy').ok, true);
+assert.equal(q4.guess('treecko').message, 'Treecko is not part of this quiz');
+
+// Mismos totales que pkmnquiz.com
+const total = (entries) => new Set(entries.map((e) => e.base)).size;
+assert.equal(total(data.entries.filter((e) => e.generation === 6)), 119);
+assert.equal(total(data.entries.filter((e) => e.types.includes('fire'))), 89);
+assert.equal(total(data.entries.filter((e) => e.legendary || e.subLegendary || e.mythical || e.ultraBeast || e.paradox)), 125);
+
 console.log('OK');

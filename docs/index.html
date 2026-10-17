@@ -18,7 +18,9 @@
     </div>
     <div class="box lime"><b id="counter" class="highlight">0</b> / <span id="total">0</span></div>
     <div class="box lime">Timer: <b id="timer" class="highlight">00:00:00</b></div>
+    <div class="box lime" id="quizname" hidden></div>
   </header>
+  <div id="bgicon" class="bgicon" hidden></div>
 
   <main>
     <section id="missednames" hidden>
@@ -37,8 +39,11 @@
         <button id="reset" class="button">Reset</button>
       </div>
       <div class="row">
-        <div class="box option">
+        <div class="box option quizbar">
           <button id="fullquiz" class="link">Full Quiz</button>
+          <button id="open-gens" class="link">Generations</button>
+          <button id="open-types-bar" class="link">Types</button>
+          <button id="special" class="link">Special Quiz</button>
         </div>
       </div>
       <div class="row">
@@ -64,7 +69,28 @@
       </div>
       <div id="menu" hidden>
         <button class="button big" id="start-full">Full quiz</button>
+        <p class="hint">Pick one or more generations:</p>
+        <div id="gen-grid" class="gen-grid"></div>
+        <div class="gen-actions">
+          <button id="gens-all" class="link">All</button>
+          <button id="gens-none" class="link">None</button>
+          <button id="start-gens" class="button" disabled>Start</button>
+        </div>
+        <button class="button types-open" id="open-types"><img id="types-icon" alt="">Types</button>
       </div>
+    </div>
+  </div>
+
+  <div id="types" class="overlay" hidden>
+    <div id="type-grid" class="type-grid"></div>
+  </div>
+
+  <div id="switch" class="overlay" hidden>
+    <div class="prompt">
+      <h2>Switch Quiz?</h2>
+      <p>Quiz and timer will reset</p>
+      <button id="switch-yes" class="button">Switch</button>
+      <button id="switch-no" class="button">Cancel</button>
     </div>
   </div>
 

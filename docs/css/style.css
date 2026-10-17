@@ -1,6 +1,7 @@
 :root {
   --lime: #8cc63f;
-  --lime-dark: #6fa52a;
+  --lime-dark: color-mix(in srgb, var(--lime) 82%, black);
+  --on-lime: #fff;
   --text: #333;
   --card: rgba(255, 255, 255, 0.85);
   --muted: #eee;
@@ -31,12 +32,12 @@ button { font: inherit; color: inherit; cursor: pointer; }
   padding: 9px 12px 8px;
   box-shadow: var(--shadow);
 }
-.box.lime { background: var(--lime); color: #fff; border-radius: 3px 20px; padding: 11px 18px 10px; }
-.highlight { color: #222; }
+.box.lime { background: var(--lime); color: var(--on-lime); border-radius: 3px 20px; padding: 11px 18px 10px; }
+.highlight { color: inherit; font-weight: bold; }
 
 .button {
   background: var(--lime);
-  color: #fff;
+  color: var(--on-lime);
   border: 0;
   border-radius: 13px 3px;
   padding: 12px 16px;
@@ -49,7 +50,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .button.big { font-size: 20px; padding: 14px 32px; }
 
 .link { background: none; border: 0; padding: 4px 8px; border-radius: 6px; }
-.link:hover, .link.active { background: var(--lime); color: #fff; }
+.link:hover, .link.active { background: var(--lime); color: var(--on-lime); }
 
 /* ------------------------------------------------------------ cabecera */
 
@@ -137,7 +138,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
   border: 2px solid var(--lime); background: transparent; color: var(--lime-dark);
   border-radius: 4px; padding: 1px 6px; font-size: 12px; font-weight: bold;
 }
-.lang.active { background: var(--lime); color: #fff; }
+.lang.active { background: var(--lime); color: var(--on-lime); }
 
 /* ------------------------------------------------------------ controles y pie */
 
@@ -204,4 +205,74 @@ footer a { color: var(--lime); }
   #header { gap: 6px; padding: 6px; }
   .box.lime { padding: 8px 12px; }
   .missed { width: 50%; }
+}
+
+/* ------------------------------------------------------------ disposiciones por tipo de quiz */
+
+/* Generaciones: cajas a lo ancho, una debajo de otra */
+body[data-layout="gens"] .column { width: 100%; }
+body[data-layout="gens"] .slot { width: 38px; height: 26px; }
+body[data-layout="gens"] .section[data-key="unknown"] { max-width: 100px; }
+body[data-layout="types"] .slot,
+body[data-layout="special"] .slot { width: 36px; height: 26px; }
+body[data-layout="special"] .column { width: 33.33%; }
+
+/* Colores por tipo (y dorado para Special) */
+[data-theme="normal"] { --lime: #ddddcc; --on-lime: #646464; }
+[data-theme="fire"] { --lime: #ff6611; }
+[data-theme="water"] { --lime: #3377ff; }
+[data-theme="grass"] { --lime: #11cc33; }
+[data-theme="electric"] { --lime: #ffdd11; --on-lime: #646464; }
+[data-theme="ice"] { --lime: #33ddff; }
+[data-theme="fighting"] { --lime: #bb1122; }
+[data-theme="poison"] { --lime: #cc22cc; }
+[data-theme="ground"] { --lime: #eebb77; --on-lime: #646464; }
+[data-theme="flying"] { --lime: #ccbbff; }
+[data-theme="psychic"] { --lime: #ff3377; }
+[data-theme="bug"] { --lime: #aaee33; --on-lime: #646464; }
+[data-theme="rock"] { --lime: #664433; }
+[data-theme="ghost"] { --lime: #663388; }
+[data-theme="dragon"] { --lime: #1144aa; }
+[data-theme="dark"] { --lime: #334466; }
+[data-theme="steel"] { --lime: #558888; }
+[data-theme="fairy"] { --lime: #ff88bb; }
+[data-theme="special"] { --lime: #ffbb11; }
+body[data-theme]:not([data-theme=""]) {
+  background: linear-gradient(160deg, color-mix(in srgb, var(--lime) 18%, white) 0%, color-mix(in srgb, var(--lime) 45%, white) 100%) fixed;
+}
+.bgicon {
+  position: fixed; left: 8%; bottom: 10%; z-index: -1;
+  width: 30vw; max-width: 420px; aspect-ratio: 1; opacity: 0.35;
+  background: var(--lime);
+  mask-position: center; mask-size: contain; mask-repeat: no-repeat;
+}
+
+/* ------------------------------------------------------------ menús */
+
+.hint { margin: 18px 0 8px; font-size: 14px; }
+.gen-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.genbtn, .typebtn {
+  display: flex; align-items: center; justify-content: space-between; gap: 6px;
+  border: 2px solid var(--lime); border-radius: 3px 14px; padding: 6px 10px;
+  background: #fff; color: var(--text); font-weight: bold; min-width: 120px;
+}
+.genbtn img { width: 40px; height: 32px; object-fit: none; object-position: 50% 90%; image-rendering: pixelated; }
+.genbtn[aria-pressed="true"] { background: var(--lime); color: var(--on-lime); }
+.genbtn:hover { border-color: var(--lime-dark); }
+.gen-actions { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 10px; }
+.types-open { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; }
+.types-open img { width: 22px; height: 22px; }
+.types-open[data-theme] { background: var(--lime); color: var(--on-lime); }
+
+.type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.typebtn { background: var(--lime); color: var(--on-lime); border-color: color-mix(in srgb, var(--lime) 75%, black); min-width: 150px; padding: 10px 14px; }
+.typebtn img { width: 28px; height: 28px; }
+.typebtn:hover { filter: brightness(1.1); }
+.mshow { display: none; }
+
+@media (max-width: 600px) {
+  .mshow { display: inline; }
+  .mhide { display: none; }
+  .genbtn, .typebtn { min-width: 0; }
+  body[data-layout="special"] .column { width: 100%; }
 }

@@ -10,12 +10,32 @@ const CYCLE_MS = 2000;
 const LANG_GROUPS = [['ENG', 'ESP', 'ITA'], ['FRE'], ['GER'], ['KOR'], ['JPN'], ['CHT'], ['CHS']];
 const MISSED_LANGS = ['ENG', 'FRE', 'GER', 'ESP', 'ITA', 'KOR', 'JPN', 'CHT', 'CHS'];
 
+// Orden del selector de tipos (3 columnas, como la original) y abreviaturas para móvil
+const TYPE_MENU = ['normal', 'ground', 'bug', 'water', 'flying', 'rock', 'grass', 'fighting', 'ghost',
+  'fire', 'poison', 'steel', 'electric', 'psychic', 'dragon', 'ice', 'dark', 'fairy'];
+const TYPE_ABBR = { normal: 'NRM', ground: 'GRD', bug: 'BUG', water: 'WTR', flying: 'FLY', rock: 'RCK', grass: 'GRS',
+  fighting: 'FGT', ghost: 'GHT', fire: 'FIR', poison: 'PSN', steel: 'STL', electric: 'ELC', psychic: 'PSY',
+  dragon: 'DRG', ice: 'ICE', dark: 'DRK', fairy: 'FRY' };
+// Iconos que rotan en los botones de cada generación
+const STARTERS = [['bulbasaur', 'charmander', 'squirtle'], ['cyndaquil', 'totodile', 'chikorita'],
+  ['mudkip', 'treecko', 'torchic'], ['turtwig', 'chimchar', 'piplup'], ['tepig', 'oshawott', 'snivy'],
+  ['froakie', 'chespin', 'fennekin'], ['rowlet', 'litten', 'popplio'], ['scorbunny', 'sobble', 'grookey'],
+  ['quaxly', 'sprigatito', 'fuecoco']];
+const SPECIAL_BOXES = [
+  { key: 'sub-legendary', title: 'Sub-Legendary', column: 1, flag: 'subLegendary' },
+  { key: 'legendary', title: 'Legendary', column: 1, flag: 'legendary' },
+  { key: 'mythical', title: 'Mythical', column: 1, flag: 'mythical' },
+  { key: 'ultrabeast', title: 'Ultra Beast', column: 2, flag: 'ultraBeast' },
+  { key: 'paradox', title: 'Paradox', column: 2, flag: 'paradox' },
+];
+
 let data, quiz;
-// Una casilla por especie y sección: sus formas comparten casilla y van rotando
-// { section, base, frames: [{ src, id }], img, state: null | 'named' | 'revealed', item }
+// Una casilla por especie y caja: sus formas comparten casilla y van rotando
+// { box, base, frames: [{ src, id }], img, state: null | 'named' | 'revealed', item }
 let slots = [];
 let slotsByBase = new Map();
-const sectionEl = new Map();
+const sectionEl = new Map(); // caja -> elemento
+const selectedGens = new Set();
 const state = { started: false, over: false, timer: null, startTime: 0, elapsed: 0, tick: 0, missingno: false };
 let revealTimeouts = [];
 
@@ -27,23 +47,31 @@ async function init() {
   data = await (await fetch('data/pokemon.json')).json();
   quiz = new Quiz(data);
   buildLanguageButtons();
+  buildMenus();
   bindEvents();
   setInterval(cycleSprites, CYCLE_MS);
   $('loading').hidden = true;
   $('menu').hidden = false;
 }
 
-function buildBoard(entries) {
+// layout: 'full' (5 columnas), 'gens' (cajas a lo ancho), 'types' o 'special' (cajas por categoría)
+function buildBoard(entries, layout) {
   const columns = [];
   slots = [];
   slotsByBase = new Map();
   sectionEl.clear();
-  for (const s of data.sections) {
-    const inSection = entries.filter((e) => e.section === s.key);
+  const boxes = layout === 'special' ? SPECIAL_BOXES : data.sections;
+  const boxOf = layout === 'special'
+    ? (e) => SPECIAL_BOXES.find((b) => e[b.flag])?.key
+    : (e) => e.section;
+  for (const s of boxes) {
+    const inSection = entries.filter((e) => boxOf(e) === s.key);
     if (!inSection.length) continue;
-    columns[s.column] ??= Object.assign(document.createElement('div'), { className: 'column' });
+    const column = layout === 'gens' ? 1 : s.column;
+    columns[column] ??= Object.assign(document.createElement('div'), { className: 'column' });
     const box = document.createElement('div');
     box.className = 'box section';
+    box.dataset.key = s.key;
     box.innerHTML = `<h3>${s.title}</h3><div class="slots"></div>`;
 
     const groups = new Map();
@@ -62,14 +90,14 @@ function buildBoard(entries) {
       img.alt = '';
       el.append(img);
       box.lastChild.append(el);
-      const slot = { section: s.key, base, frames, img, state: null, item: null };
+      const slot = { box: s.key, base, frames, img, state: null, item: null };
       renderSlot(slot);
       slots.push(slot);
       if (!slotsByBase.has(base)) slotsByBase.set(base, []);
       slotsByBase.get(base).push(slot);
     }
     sectionEl.set(s.key, box);
-    columns[s.column].append(box);
+    columns[column].append(box);
   }
   $('boxes').replaceChildren(...columns.filter(Boolean));
 }
@@ -111,6 +139,80 @@ function buildLanguageButtons() {
   }
 }
 
+// ------------------------------------------------------------ menús de quiz
+
+const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+
+function buildMenus() {
+  // Generaciones: selección múltiple (el único cambio respecto a la original)
+  STARTERS.forEach((_, i) => {
+    const gen = i + 1;
+    const b = document.createElement('button');
+    b.className = 'genbtn';
+    b.dataset.gen = gen;
+    b.setAttribute('aria-pressed', 'false');
+    b.innerHTML = `<span class="mhide">Gen ${gen}</span><span class="mshow">${gen}</span><img alt="">`;
+    b.onclick = () => {
+      selectedGens.has(gen) ? selectedGens.delete(gen) : selectedGens.add(gen);
+      renderGenSelection();
+    };
+    $('gen-grid').append(b);
+  });
+
+  for (const type of TYPE_MENU) {
+    const b = document.createElement('button');
+    b.className = 'typebtn';
+    b.dataset.theme = type;
+    b.innerHTML = `<img src="images/types/${type}.svg" alt=""><span class="mhide">${cap(type)}</span><span class="mshow">${TYPE_ABBR[type]}</span>`;
+    b.onclick = () => requestQuiz(() => startType(type));
+    $('type-grid').append(b);
+  }
+  renderMenuIcons();
+}
+
+function renderGenSelection() {
+  for (const b of $('gen-grid').children) {
+    b.setAttribute('aria-pressed', String(selectedGens.has(Number(b.dataset.gen))));
+  }
+  $('start-gens').disabled = selectedGens.size === 0;
+}
+
+// Los botones de generación muestran sus iniciales y el de tipos va cambiando de tipo
+function renderMenuIcons() {
+  [...$('gen-grid').children].forEach((b, i) => {
+    const starters = STARTERS[i];
+    const e = quiz.entriesByBase.get(starters[state.tick % starters.length])[0];
+    b.querySelector('img').src = spriteSrc(e.sprite);
+  });
+  const type = TYPE_MENU[state.tick % TYPE_MENU.length];
+  $('types-icon').src = `images/types/${type}.svg`;
+  $('open-types').dataset.theme = type;
+}
+
+function closeMenus() {
+  $('start').hidden = true;
+  $('types').hidden = true;
+}
+
+function startFull() {
+  startQuiz('Full', data.entries, 'full');
+}
+
+function startGens() {
+  const gens = [...selectedGens].sort((a, b) => a - b);
+  const name = gens.length === 1 ? `Generation ${gens[0]}` : `Gen ${gens.join(' · ')}`;
+  startQuiz(name, data.entries.filter((e) => selectedGens.has(e.generation)), 'gens');
+}
+
+function startType(type) {
+  startQuiz(`${cap(type)} type`, data.entries.filter((e) => e.types.includes(type)), 'types', type);
+}
+
+function startSpecial() {
+  const entries = data.entries.filter((e) => SPECIAL_BOXES.some((b) => e[b.flag]));
+  startQuiz('Special', entries, 'special', 'special');
+}
+
 // ------------------------------------------------------------ casillas
 
 const frameOf = (slot) => slot.frames[state.tick % slot.frames.length];
@@ -128,13 +230,14 @@ function showSlot(slot, newState, cls) {
   slot.state = newState;
   slot.img.className = cls;
   renderSlot(slot);
-  const inSection = slots.filter((s) => s.section === slot.section);
-  if (inSection.every((s) => s.state)) sectionEl.get(slot.section).classList.add('outline');
+  const inBox = slots.filter((s) => s.box === slot.box);
+  if (inBox.every((s) => s.state)) sectionEl.get(slot.box).classList.add('outline');
 }
 
 // Cada 2 s, las casillas con varias formas pasan a la siguiente (y su nombre en "Missed names")
 function cycleSprites() {
   state.tick++;
+  renderMenuIcons();
   for (const slot of slots) {
     if (slot.frames.length < 2) continue;
     if (slot.state) slot.img.src = frameOf(slot).src;
@@ -144,11 +247,25 @@ function cycleSprites() {
 
 // ------------------------------------------------------------ quiz
 
-function startQuiz(name, entries) {
+// Cambiar de quiz con aciertos pide confirmación ("Switch Quiz?"), como la original
+function requestQuiz(start) {
+  closeMenus();
+  if (quiz.score === 0) return start();
+  $('switch').hidden = false;
+  $('switch-yes').onclick = () => { $('switch').hidden = true; start(); };
+}
+
+function startQuiz(name, entries, layout, theme = '') {
   quiz.setQuiz(name, entries);
-  buildBoard(entries);
+  document.body.dataset.layout = layout;
+  document.body.dataset.theme = theme;
+  $('bgicon').style.maskImage = `url(images/types/${theme}.svg)`;
+  $('bgicon').hidden = !theme || theme === 'special';
+  $('quizname').textContent = name;
+  $('quizname').hidden = layout !== 'gens';
+  buildBoard(entries, layout);
   resetBoard();
-  $('start').hidden = true;
+  closeMenus();
   $('inputbox').classList.remove('shake');
   void $('inputbox').offsetWidth;
   $('inputbox').classList.add('shake');
@@ -272,7 +389,7 @@ function finish() {
   stopTimer();
   renderTimer();
   input.disabled = true;
-  $('congrats-count').textContent = quiz.score;
+  $('congrats-count').textContent = quiz.name === 'Full' ? quiz.score : `${quiz.score} ${quiz.name}`;
   $('congrats-time').textContent = formatTime(elapsed());
   $('congrats-mode').textContent = '!';
   $('congrats-shadows').hidden = true;
@@ -285,7 +402,7 @@ function renderMissed() {
   const panel = $('panel');
   panel.innerHTML = '';
   for (const key of sectionEl.keys()) {
-    const missed = slots.filter((s) => s.section === key && !s.state);
+    const missed = slots.filter((s) => s.box === key && !s.state);
     if (!missed.length) continue;
     const group = document.createElement('div');
     group.className = 'box group';
@@ -339,8 +456,22 @@ function bindEvents() {
     if (ev.key === 'Enter') input.value = '';
     if (document.activeElement?.tagName !== 'INPUT') input.focus();
   });
-  $('start-full').onclick = () => startQuiz('Full', data.entries);
-  $('fullquiz').onclick = () => { $('start').hidden = false; };
+  $('start-full').onclick = () => requestQuiz(startFull);
+  $('fullquiz').onclick = () => requestQuiz(startFull);
+  $('start-gens').onclick = () => requestQuiz(startGens);
+  $('gens-all').onclick = () => { STARTERS.forEach((_, i) => selectedGens.add(i + 1)); renderGenSelection(); };
+  $('gens-none').onclick = () => { selectedGens.clear(); renderGenSelection(); };
+  $('open-gens').onclick = () => { $('start').hidden = false; };
+  $('open-types').onclick = () => { $('start').hidden = true; $('types').hidden = false; };
+  $('open-types-bar').onclick = () => { $('types').hidden = false; };
+  $('special').onclick = () => requestQuiz(startSpecial);
+  $('switch-no').onclick = () => { $('switch').hidden = true; };
+  // Clic fuera de un menú lo cierra (si ya hay un quiz en marcha)
+  for (const id of ['start', 'types', 'switch']) {
+    $(id).addEventListener('click', (ev) => {
+      if (ev.target === $(id) && quiz.name) $(id).hidden = true;
+    });
+  }
   $('giveup').onclick = giveUp;
   $('reset').onclick = resetBoard;
   $('congrats').onclick = () => { $('congrats').hidden = true; };

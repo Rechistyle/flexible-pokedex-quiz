@@ -264,7 +264,7 @@ async function main() {
   const { generations } = readList('generations.json');
   const { categories, exceptions } = readList('categories.json');
   const { cycles } = readList('cycles.json');
-  const { aliases } = readList('aliases.json');
+  const { uniqueForms } = readList('aliases.json');
   const formLabels = readList('form-labels.json');
 
   const entries = [];
@@ -353,7 +353,7 @@ async function main() {
       dexNumber: sp?.dex ?? null,
       name: sp?.names.ENG ?? base,
       names: sp?.names ?? {},
-      aliases: Object.entries(aliases).filter(([, b]) => b === base).map(([a]) => a),
+      aliases: Object.keys(uniqueForms).filter((k) => uniqueForms[k].base === base),
     };
   }
 
@@ -365,6 +365,7 @@ async function main() {
     generations,
     formLabels: { byBase: formLabels.byBase, bySuffix: formLabels.bySuffix },
     species,
+    uniqueForms,
     entries: out,
   }));
 

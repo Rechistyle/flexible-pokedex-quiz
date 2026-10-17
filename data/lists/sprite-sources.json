@@ -1,5 +1,5 @@
 {
- "_comment": "Origen de cada sprite cuando no basta la búsqueda automática (primero PokéSprite por nombre, luego el pack por nombre de especie). sheet = índice en las hojas mega-dimension-*.png (cuadrícula 5×5 de 32 px). pack = archivo del pack de iconos. none = sin sprite (marcador genérico).",
+ "_comment": "Origen de cada sprite cuando no basta la búsqueda automática (primero PokéSprite por nombre, luego el pack por nombre de especie). sheet = índice en las hojas mega-dimension-*.png (cuadrícula 5×5 de 32 px). pack = archivo del pack de iconos. none = sin sprite (marcador genérico). Formas sin icono propio (Rotom Stereo, Marshadow Zenith, Koraidon Limited, Miraidon Low-Power, Pecharunt Shell) usan el de la forma normal.",
  "sheet": {
   "raichumegax": 0,
   "raichumegay": 1,
@@ -39,7 +39,9 @@
   "frillish-f": "female/frillish",
   "jellicent-f": "female/jellicent",
   "pyroar-f": "female/pyroar",
-  "appletungmax": "flapple-gmax"
+  "appletungmax": "flapple-gmax",
+  "rotomstereo": "rotom",
+  "marshadowzenith": "marshadow"
  },
  "pack": {
   "kyuremwhiteactive": "KYUREM_3",
@@ -110,19 +112,17 @@
   "hawluchamega": "HAWLUCHA_1",
   "zygardecompletemega": "ZYGARDE_4",
   "drampamega": "DRAMPA_1",
-  "falinksmega": "FALINKS_1"
+  "falinksmega": "FALINKS_1",
+  "koraidonlimited": "KORAIDON",
+  "miraidonlowpower": "MIRAIDON",
+  "pecharuntshell": "PECHARUNT"
  },
  "none": [
-  "rotomstereo",
-  "marshadowzenith",
   "marshadow-zenith",
   "reshiram-active",
   "zekrom-active",
-  "koraidonlimited",
   "koraidon-limited",
-  "miraidonlowpower",
   "miraidon-low-power",
-  "pecharuntshell",
   "unown-a",
   "magearna-mega"
  ]

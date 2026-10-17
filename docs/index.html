@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flexible Pokédex Quiz</title>
+  <meta name="description" content="Name every Pokémon. Pick any combination of generations.">
+  <link rel="icon" href="sprites/unknown.png">
+  <link rel="stylesheet" href="css/style.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <header id="header">
+    <div class="box lime inputbox" id="inputbox">
+      <label for="pokemon"><span class="long">Name all Pokémon:</span><span class="short">Input:</span></label>
+      <input type="text" id="pokemon" maxlength="13" autocomplete="off" autocapitalize="off" spellcheck="false" disabled>
+      <img id="recentsprite" alt="">
+    </div>
+    <div class="box lime"><b id="counter" class="highlight">0</b> / <span id="total">0</span></div>
+    <div class="box lime">Timer: <b id="timer" class="highlight">00:00:00</b></div>
+  </header>
+
+  <main>
+    <section id="missednames" hidden>
+      <div class="box missed-head">
+        <button id="accordion" class="accordion" aria-expanded="true">Missed names: <i class="arrow"></i></button>
+        <div id="missed-langs" class="langs"></div>
+      </div>
+      <div id="panel"></div>
+    </section>
+
+    <div id="boxes"></div>
+
+    <div id="controls">
+      <div class="row">
+        <button id="giveup" class="button">Give Up</button>
+        <button id="reset" class="button">Reset</button>
+      </div>
+      <div class="row">
+        <div class="box option">
+          <button id="fullquiz" class="link">Full Quiz</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="box option langs" id="langs"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Fan-made quiz inspired by pkmnquiz.com. Data: <a href="https://pokeapi.co/" target="_blank" rel="noopener">PokéAPI</a>.
+      Sprites: <a href="https://msikma.github.io/pokesprite/" target="_blank" rel="noopener">PokéSprite</a> and community box icons.</p>
+    <p>This is an unofficial project based on Pokémon. Pokémon and Pokémon character names are trademarks of Nintendo, Creatures Inc. and GAME FREAK Inc.</p>
+  </footer>
+
+  <div id="snackbar" class="snackbar" role="status"></div>
+
+  <div id="start" class="overlay">
+    <div class="prompt">
+      <h1 class="title">Flexible<br>Pokédex Quiz</h1>
+      <div id="loading">
+        <h2>Loading Quiz</h2>
+        <div class="dots"><span></span><span></span><span></span></div>
+      </div>
+      <div id="menu" hidden>
+        <button class="button big" id="start-full">Full quiz</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="congrats" class="overlay side" hidden>
+    <div class="prompt side-panel">
+      <div class="welldone">Well done!</div>
+      <p class="big-text">You named <span id="congrats-count"></span> Pokémon
+        <img id="congrats-bonus" class="bonus" src="sprites/normal/ditto.png" alt="bonus" hidden><br>
+        in <span id="congrats-time"></span><span id="congrats-mode">!</span></p>
+      <p id="congrats-shadows" hidden>Challenge yourself further<br>try naming them without shadows. (<span id="shadow-count">0</span> shadows used)</p>
+      <p class="small">Click anywhere to close</p>
+    </div>
+  </div>
+</body>
+</html>

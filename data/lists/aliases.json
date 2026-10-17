@@ -1,11 +1,89 @@
 {
- "_comment": "Nombres especiales aceptados que equivalen a otra especie.",
- "aliases": {
-  "peakychu": "pikachu",
-  "mosslax": "snorlax",
-  "chefdente": "greedent",
-  "smearguru": "smeargle",
-  "professor": "tangrowth",
-  "tinkmaster": "tinkaton"
+ "_comment": "Formas únicas (personajes especiales) que se aceptan como nombre de su especie. Nombrar las 6 da una insignia en la pantalla final.",
+ "uniqueForms": {
+  "peakychu": {
+   "base": "pikachu",
+   "names": {
+    "ENG": "Peakychu",
+    "FRE": "Pikapâle",
+    "GER": "Schlappchu",
+    "ESP": "Palidachu",
+    "ITA": "Pallichu",
+    "KOR": "창백카츄",
+    "JPN": "うすチュウ",
+    "CHT": "淺淺丘",
+    "CHS": "浅浅丘"
+   }
+  },
+  "mosslax": {
+   "base": "snorlax",
+   "names": {
+    "ENG": "Mosslax",
+    "FRE": "Moussu",
+    "GER": "Mooslaxo",
+    "ESP": "Musgorlax",
+    "ITA": "Granmuschio",
+    "KOR": "이끼만보",
+    "JPN": "こけカビゴン",
+    "CHT": "苔卡比獸",
+    "CHS": "苔卡比兽"
+   }
+  },
+  "chefdente": {
+   "base": "greedent",
+   "names": {
+    "ENG": "Chefdente",
+    "FRE": "Rongragoût",
+    "GER": "Chefkoch",
+    "ESP": "Chefgreedent",
+    "ITA": "Greeglia",
+    "KOR": "요씽셰프",
+    "JPN": "シェフバリス",
+    "CHT": "藏飽栗廚",
+    "CHS": "藏饱栗厨"
+   }
+  },
+  "smearguru": {
+   "base": "smeargle",
+   "names": {
+    "ENG": "Smearguru",
+    "FRE": "Maître",
+    "GER": "Meister",
+    "ESP": "Maestro",
+    "ITA": "Maestro",
+    "KOR": "선생",
+    "JPN": "せんせい",
+    "CHT": "老師",
+    "CHS": "老师"
+   }
+  },
+  "professor": {
+   "base": "tangrowth",
+   "names": {
+    "ENG": "Professor",
+    "FRE": "Professeur",
+    "GER": "Professor",
+    "ESP": "Profesor",
+    "ITA": "Professor",
+    "KOR": "박사",
+    "JPN": "はかせ",
+    "CHT": "博士",
+    "CHS": "博士"
+   }
+  },
+  "tinkmaster": {
+   "base": "tinkaton",
+   "names": {
+    "ENG": "Tinkmaster",
+    "FRE": "Cheffelina",
+    "GER": "Bauleiter",
+    "ESP": "Manitas",
+    "ITA": "Capotinka",
+    "KOR": "거장",
+    "JPN": "デカヌおやかた",
+    "CHT": "巨鍛頭頭",
+    "CHS": "巨锻头头"
+   }
+  }
  }
 }

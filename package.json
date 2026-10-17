@@ -5,7 +5,9 @@
   "type": "module",
   "description": "Pokémon quiz inspired by pkmnquiz.com with multi-generation selection",
   "scripts": {
-    "build-data": "node scripts/build-data.js"
+    "build-data": "node scripts/build-data.js",
+    "test": "node tests/quiz.test.js",
+    "start": "node scripts/serve.js"
   },
   "devDependencies": {
     "pngjs": "^7.0.0"

@@ -276,3 +276,9 @@ body[data-theme]:not([data-theme=""]) {
   .genbtn, .typebtn { min-width: 0; }
   body[data-layout="special"] .column { width: 100%; }
 }
+
+/* Chaos y Dex Order: una sola caja a lo ancho */
+body:not([data-mode="regular"]) .column { width: 100%; }
+.section h3:empty { display: none; }
+.segmented { display: inline-flex; border: 2px solid var(--lime); border-radius: 6px; overflow: hidden; }
+.segmented .link { border-radius: 0; }

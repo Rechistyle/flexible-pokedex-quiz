@@ -36,7 +36,8 @@ let slots = [];
 let slotsByBase = new Map();
 const sectionEl = new Map(); // caja -> elemento
 const selectedGens = new Set();
-const state = { started: false, over: false, timer: null, startTime: 0, elapsed: 0, tick: 0, missingno: false };
+const state = { started: false, over: false, timer: null, startTime: 0, elapsed: 0, tick: 0, missingno: false, mode: 'regular' };
+let current = null; // quiz activo: { name, entries, layout, theme }
 let revealTimeouts = [];
 
 const spriteSrc = (file) => `sprites/normal/${file}`;
@@ -55,14 +56,16 @@ async function init() {
 }
 
 // layout: 'full' (5 columnas), 'gens' (cajas a lo ancho), 'types' o 'special' (cajas por categoría)
-function buildBoard(entries, layout) {
+function buildBoard(entries, layout, mode) {
   const columns = [];
   slots = [];
   slotsByBase = new Map();
   sectionEl.clear();
-  const boxes = layout === 'special' ? SPECIAL_BOXES : data.sections;
-  const boxOf = layout === 'special'
-    ? (e) => SPECIAL_BOXES.find((b) => e[b.flag])?.key
+  // Chaos y Dex Order: una sola caja, una casilla por especie con todas sus formas
+  const boxes = mode !== 'regular' ? [{ key: 'big', title: '', column: 1 }]
+    : layout === 'special' ? SPECIAL_BOXES : data.sections;
+  const boxOf = mode !== 'regular' ? () => 'big'
+    : layout === 'special' ? (e) => SPECIAL_BOXES.find((b) => e[b.flag])?.key
     : (e) => e.section;
   for (const s of boxes) {
     const inSection = entries.filter((e) => boxOf(e) === s.key);
@@ -90,7 +93,7 @@ function buildBoard(entries, layout) {
       img.alt = '';
       el.append(img);
       box.lastChild.append(el);
-      const slot = { box: s.key, base, frames, img, state: null, item: null };
+      const slot = { box: s.key, base, frames, img, el, state: null, item: null };
       renderSlot(slot);
       slots.push(slot);
       if (!slotsByBase.has(base)) slotsByBase.set(base, []);
@@ -251,19 +254,50 @@ function cycleSprites() {
 function requestQuiz(start) {
   closeMenus();
   if (quiz.score === 0) return start();
-  $('switch').hidden = false;
-  $('switch-yes').onclick = () => { $('switch').hidden = true; start(); };
+  confirmDialog('Switch Quiz?', 'Switch', start);
+}
+
+function confirmDialog(title, yes, action) {
+  $('confirm-title').textContent = title;
+  $('confirm-yes').textContent = yes;
+  $('confirm-yes').onclick = () => { $('confirm').hidden = true; action(); };
+  $('confirm').hidden = false;
+}
+
+// Botones de modo; cada cambio pide confirmación y reinicia el quiz actual
+function requestMode(mode) {
+  if (mode === state.mode) return;
+  if (mode === 'chaos') return confirmDialog('Enable guessing without predetermined placements', 'Enable', () => setMode('chaos'));
+  if (mode === 'regular') return confirmDialog('Switch to regular quiz with Region Layout', 'Switch', () => setMode('regular'));
+  if (current && ['types', 'special'].includes(current.layout)) return showMessage('Order mode does not work with the current quiz');
+  confirmDialog('Enforce guessing in Pokédex order', 'Enable', () => setMode('order'));
+}
+
+function setMode(mode) {
+  state.mode = mode;
+  renderModeButtons();
+  if (current) startQuiz(current.name, current.entries, current.layout, current.theme);
+}
+
+function renderModeButtons() {
+  for (const b of $('modes').children) b.classList.toggle('active', b.dataset.mode === state.mode);
 }
 
 function startQuiz(name, entries, layout, theme = '') {
-  quiz.setQuiz(name, entries);
+  current = { name, entries, layout, theme };
+  if (state.mode === 'order' && ['types', 'special'].includes(layout)) {
+    state.mode = 'regular'; // la original lo desactiva al pasar a Types/Special
+    renderModeButtons();
+    showMessage('Order mode disabled');
+  }
+  quiz.setQuiz(name, entries, state.mode);
+  document.body.dataset.mode = state.mode;
   document.body.dataset.layout = layout;
   document.body.dataset.theme = theme;
   $('bgicon').style.maskImage = `url(images/types/${theme}.svg)`;
   $('bgicon').hidden = !theme || theme === 'special';
   $('quizname').textContent = name;
   $('quizname').hidden = layout !== 'gens';
-  buildBoard(entries, layout);
   resetBoard();
   closeMenus();
   $('inputbox').classList.remove('shake');
@@ -274,6 +308,7 @@ function startQuiz(name, entries, layout, theme = '') {
 
 function resetBoard() {
   quiz.reset();
+  buildBoard(quiz.entries, current.layout, state.mode);
   stopTimer();
   state.started = false;
   state.over = false;
@@ -281,12 +316,6 @@ function resetBoard() {
   state.missingno = false;
   for (const timeout of revealTimeouts) clearTimeout(timeout);
   revealTimeouts = [];
-  for (const slot of slots) {
-    slot.state = null;
-    slot.item = null;
-    renderSlot(slot);
-  }
-  for (const el of sectionEl.values()) el.classList.remove('outline');
   $('missednames').hidden = true;
   $('panel').innerHTML = '';
   $('recentsprite').removeAttribute('src');
@@ -315,7 +344,11 @@ function onInput() {
   if (result.ok) {
     input.value = '';
     const baseSlots = slotsByBase.get(result.base);
-    for (const slot of baseSlots) showSlot(slot, 'named', 'zoom');
+    for (const slot of baseSlots) {
+      // Chaos: los aciertos ocupan las casillas en el orden en que se dicen
+      if (state.mode === 'chaos') slot.el.parentElement.insertBefore(slot.el, slot.el.parentElement.children[quiz.score - 1]);
+      showSlot(slot, 'named', 'zoom');
+    }
     $('recentsprite').src = frameOf(baseSlots[0]).src;
     if (!state.started) startTimer();
     renderScore();
@@ -391,7 +424,7 @@ function finish() {
   input.disabled = true;
   $('congrats-count').textContent = quiz.name === 'Full' ? quiz.score : `${quiz.score} ${quiz.name}`;
   $('congrats-time').textContent = formatTime(elapsed());
-  $('congrats-mode').textContent = '!';
+  $('congrats-mode').textContent = { order: ' in Pokédex order!', chaos: ' in Chaos mode!' }[state.mode] ?? '!';
   $('congrats-shadows').hidden = true;
   $('congrats-bonus').hidden = quiz.uniqueNamed.size !== Object.keys(data.uniqueForms).length;
   $('congrats').hidden = false;
@@ -465,9 +498,10 @@ function bindEvents() {
   $('open-types').onclick = () => { $('start').hidden = true; $('types').hidden = false; };
   $('open-types-bar').onclick = () => { $('types').hidden = false; };
   $('special').onclick = () => requestQuiz(startSpecial);
-  $('switch-no').onclick = () => { $('switch').hidden = true; };
+  $('confirm-no').onclick = () => { $('confirm').hidden = true; };
+  for (const b of $('modes').children) b.onclick = () => requestMode(b.dataset.mode);
   // Clic fuera de un menú lo cierra (si ya hay un quiz en marcha)
-  for (const id of ['start', 'types', 'switch']) {
+  for (const id of ['start', 'types', 'confirm']) {
     $(id).addEventListener('click', (ev) => {
       if (ev.target === $(id) && quiz.name) $(id).hidden = true;
     });

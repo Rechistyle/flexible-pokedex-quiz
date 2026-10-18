@@ -45,6 +45,14 @@
           <button id="open-types-bar" class="link">Types</button>
           <button id="special" class="link">Special Quiz</button>
         </div>
+        <div class="box option">
+          Mode:
+          <div class="segmented" id="modes">
+            <button class="link" data-mode="chaos">Chaos</button>
+            <button class="link active" data-mode="regular">Regular</button>
+            <button class="link" data-mode="order">Dex Order</button>
+          </div>
+        </div>
       </div>
       <div class="row">
         <div class="box option langs" id="langs"></div>
@@ -85,12 +93,12 @@
     <div id="type-grid" class="type-grid"></div>
   </div>
 
-  <div id="switch" class="overlay" hidden>
+  <div id="confirm" class="overlay" hidden>
     <div class="prompt">
-      <h2>Switch Quiz?</h2>
+      <h2 id="confirm-title"></h2>
       <p>Quiz and timer will reset</p>
-      <button id="switch-yes" class="button">Switch</button>
-      <button id="switch-no" class="button">Cancel</button>
+      <button id="confirm-yes" class="button"></button>
+      <button id="confirm-no" class="button">Cancel</button>
     </div>
   </div>
 

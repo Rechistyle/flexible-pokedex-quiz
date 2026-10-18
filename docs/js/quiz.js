@@ -89,8 +89,18 @@ export class Quiz {
 
   // ------------------------------------------------------------ quiz activo
 
-  setQuiz(name, entries) {
+  // mode: 'regular' | 'chaos' | 'order'
+  setQuiz(name, entries, mode = 'regular') {
     this.name = name;
+    this.mode = mode;
+    if (mode === 'order') {
+      // Orden de Pokédex: solo especies cuya forma principal está en el quiz (sin Gigamax),
+      // con sus otras formas como variantes de la misma casilla
+      const canon = new Set(entries.filter((e) => e.id === e.base).map((e) => e.base));
+      entries = entries.filter((e) => canon.has(e.base) && e.section !== 'gmax')
+        .sort((a, b) => a.dexNumber - b.dexNumber);
+      this.orderList = [...new Set(entries.map((e) => e.base))];
+    }
     this.entries = entries;
     this.bases = new Set(entries.map((e) => e.base));
     this.updateQuizNames();
@@ -146,9 +156,17 @@ export class Quiz {
           if (!this.isPrefix(key, this.quizNames)) message = `${this.uniqueName(uniqueId)} is not part of this quiz`;
           continue;
         }
+        if (this.named.has(base)) {
+          this.uniqueNamed.add(uniqueId);
+          this.countLang(key);
+          return { ok: false, base, ids: [], message: `${this.uniqueName(uniqueId)} revealed!` };
+        }
+        if (!this.isNext(base)) {
+          if (!this.isPrefix(key, this.nameDict.keys())) message = `${this.uniqueName(uniqueId)} is not the next Pokémon`;
+          continue;
+        }
         this.uniqueNamed.add(uniqueId);
         this.countLang(key);
-        if (this.named.has(base)) return { ok: false, base, ids: [], message: `${this.uniqueName(uniqueId)} revealed!` };
         return this.add(base);
       }
 
@@ -162,10 +180,22 @@ export class Quiz {
         if (!this.isPrefix(key, this.quizNames)) message = `${this.speciesName(base)} is not part of this quiz`;
         continue;
       }
+      if (!this.isNext(base)) {
+        if (!this.isPrefix(key, this.nameDict.keys())) message = `${this.speciesName(base)} is not the next Pokémon`;
+        continue;
+      }
       this.countLang(key);
       return this.add(base);
     }
     return { ok: false, base: null, ids: [], message };
+  }
+
+  // En Dex Order solo vale el siguiente al último acertado
+  isNext(base) {
+    if (this.mode !== 'order') return true;
+    let last = -1;
+    this.orderList.forEach((b, i) => { if (this.named.has(b)) last = i; });
+    return this.orderList[last + 1] === base;
   }
 
   countLang(key) {

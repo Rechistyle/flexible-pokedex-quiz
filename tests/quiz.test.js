@@ -67,4 +67,16 @@ assert.equal(total(data.entries.filter((e) => e.generation === 6)), 119);
 assert.equal(total(data.entries.filter((e) => e.types.includes('fire'))), 89);
 assert.equal(total(data.entries.filter((e) => e.legendary || e.subLegendary || e.mythical || e.ultraBeast || e.paradox)), 125);
 
+// Dex Order: solo vale el siguiente; en Gen 6 quedan las 72 especies de Kalos
+const q5 = new Quiz(data);
+q5.setQuiz('Full', data.entries, 'order');
+assert.equal(q5.maxScore, 1025);
+assert.equal(q5.guess('ivysaur').message, 'Ivysaur is not the next Pokémon');
+assert.equal(q5.guess('bulbasaur').ok, true);
+assert.equal(q5.guess('ivysaur').ok, true);
+assert.deepEqual(q5.guess('venusaur').ids, ['venusaur', 'venusaurmega']); // sin Gigamax
+q5.setQuiz('Generation 6', data.entries.filter((e) => e.generation === 6), 'order');
+assert.equal(q5.maxScore, 72);
+assert.equal(q5.guess('chespin').ok, true);
+
 console.log('OK');

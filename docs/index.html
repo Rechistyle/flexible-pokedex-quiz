@@ -67,6 +67,7 @@
           <input type="number" id="timer-min" min="1" max="999" value="35" aria-label="Minutes">
           <span>min</span>
           <button class="link" id="timer-set">set</button>
+          <button class="link key" id="pause" title="Pause" aria-label="Pause">⏸</button>
         </div>
         <div class="box option">
           Type-Shuffle:
@@ -128,6 +129,17 @@
 
   <div id="types" class="overlay" hidden>
     <div id="type-grid" class="type-grid"></div>
+  </div>
+
+  <div id="pause-overlay" class="overlay paused-overlay" hidden>
+    <div class="prompt">
+      <h2>Paused</h2>
+      <button id="unpause" class="button">Resume</button>
+      <p>Save/Load Quiz State:</p>
+      <button id="savestate" class="button" title="Download quiz state">⬇ Save</button>
+      <button id="loadstate" class="button" title="Load quiz state from file">⬆ Load</button>
+      <input type="file" id="fileinput" accept=".json,.quiz,application/json" hidden>
+    </div>
   </div>
 
   <div id="confirm" class="overlay" hidden>

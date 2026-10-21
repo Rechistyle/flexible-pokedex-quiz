@@ -316,3 +316,7 @@ body:not([data-mode="regular"]) .column { width: 100%; }
 [data-dark="1"] .genbtn { background: #222; }
 [data-dark="1"] .slot img.empty { opacity: 0.12; filter: invert(1); }
 [data-dark="1"] .slot img.shadow, [data-dark="1"] .missed img.shadow { filter: brightness(0) invert(0.6); }
+
+/* Pausa: el tablero se oculta */
+body.paused #boxes, body.paused #missednames { visibility: hidden; }
+.paused-overlay { background: rgba(16, 17, 14, 0.85); }

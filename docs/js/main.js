@@ -40,7 +40,7 @@ const selectedGens = new Set();
 const state = {
   started: false, over: false, timer: null, startTime: 0, elapsed: 0, tick: 0, missingno: false, mode: 'regular',
   minutes: 0, // 0 = cronómetro (∞); si no, cuenta atrás
-  lastTyped: '', shiny: false, cycle: true, spelling: false, hotkey: false, auto: null, autoWarn: null, spooky: false,
+  paused: false, lastTyped: '', shiny: false, cycle: true, spelling: false, hotkey: false, auto: null, autoWarn: null, spooky: false,
 };
 let current = null; // quiz activo: { name, entries, layout, theme }
 let revealTimeouts = [];
@@ -214,6 +214,7 @@ function startGens() {
   const gens = [...selectedGens].sort((a, b) => a - b);
   const name = gens.length === 1 ? `Generation ${gens[0]}` : `Gen ${gens.join(' · ')}`;
   startQuiz(name, data.entries.filter((e) => selectedGens.has(e.generation)), 'gens');
+  current.gens = gens;
 }
 
 function startType(type) {
@@ -338,6 +339,7 @@ function resetBoard() {
   state.elapsed = 0;
   state.missingno = false;
   state.lastTyped = '';
+  setPaused(false);
   for (const timeout of revealTimeouts) clearTimeout(timeout);
   revealTimeouts = [];
   $('missednames').hidden = true;
@@ -389,13 +391,7 @@ function onInput() {
   const result = quiz.guess(value);
   if (result.ok) {
     input.value = '';
-    const baseSlots = slotsByBase.get(result.base);
-    for (const slot of baseSlots) {
-      // Chaos: los aciertos ocupan las casillas en el orden en que se dicen
-      if (state.mode === 'chaos') slot.el.parentElement.insertBefore(slot.el, slot.el.parentElement.children[quiz.score - 1]);
-      showSlot(slot, 'named', 'zoom');
-    }
-    $('recentsprite').src = spriteSrc(frameOf(baseSlots[0]).file);
+    showNamed(result.base);
     hideHint();
     state.lastTyped = '';
     play('correct');
@@ -408,6 +404,16 @@ function onInput() {
     if (result.message.includes('not the next')) play('wrong');
     showMessage(result.message);
   }
+}
+
+function showNamed(base, cls = 'zoom') {
+  const baseSlots = slotsByBase.get(base);
+  for (const slot of baseSlots) {
+    // Chaos: los aciertos ocupan las casillas en el orden en que se dicen
+    if (state.mode === 'chaos') slot.el.parentElement.insertBefore(slot.el, slot.el.parentElement.children[quiz.score - 1]);
+    showSlot(slot, 'named', cls);
+  }
+  $('recentsprite').src = spriteSrc(frameOf(baseSlots[0]).file);
 }
 
 // ------------------------------------------------------------ easter egg: MissingNo.
@@ -431,7 +437,7 @@ function missingnoGlitch() {
 
 function startTimer() {
   state.started = true;
-  state.startTime = Date.now();
+  state.startTime = Date.now() - state.elapsed; // continúa tras una pausa o una carga
   state.timer = setInterval(() => {
     renderTimer();
     if (state.minutes && remaining() <= 0) giveUp(); // se acabó el tiempo
@@ -579,7 +585,7 @@ function toggleAutoShadow() {
   $('shadowauto').setAttribute('aria-pressed', 'true');
   showMessage(state.mode === 'order' ? 'Activated auto-reveal of next shadow every 20 seconds'
     : 'Activated auto-reveal of random shadow every 20 seconds');
-  const active = () => !state.over && quiz.score > 0 && !quiz.complete && !allShadowsShown();
+  const active = () => !state.over && !state.paused && quiz.score > 0 && !quiz.complete && !allShadowsShown();
   const loop = () => {
     state.autoWarn = setTimeout(() => { if (active()) showMessage('Revealing a shadow in 3 seconds ...'); }, 17000);
     state.auto = setTimeout(() => { if (active()) revealNextShadow(); loop(); }, 20000);
@@ -636,6 +642,110 @@ function startSpooky() {
       startSpooky();
     }, 3500 + Math.random() * 1000);
   }, 10000 + Math.random() * 15000);
+}
+
+// ------------------------------------------------------------ pausa y guardar/cargar
+
+function setPaused(on) {
+  if (on === state.paused) return;
+  state.paused = on;
+  if (on) stopTimer();
+  else if (state.started && !state.over) startTimer();
+  renderTimer();
+  document.body.classList.toggle('paused', on);
+  $('pause-overlay').hidden = !on;
+  input.disabled = on || state.over;
+  if (!on) input.focus();
+}
+
+function saveState() {
+  if (!current) return showMessage('Start a quiz first');
+  const st = {
+    version: 1,
+    quiz: { name: current.name, layout: current.layout, type: current.layout === 'types' ? current.theme : null, gens: current.gens ?? null },
+    mode: state.mode,
+    named: [...quiz.named],
+    uniqueNamed: [...quiz.uniqueNamed],
+    langCounts: quiz.langCounts,
+    shadows: slots.filter((sl) => sl.shadow).map((sl) => [sl.box, sl.base]),
+    timer: { minutes: state.minutes, elapsed: elapsed(), started: state.started },
+    giveup: state.over && !quiz.complete,
+    paused: state.paused,
+    options: {
+      shiny: state.shiny, cycle: state.cycle, sound: sound.enabled, shuffle: quiz.shuffle, seed: quiz.seed,
+      languages: quiz.languages, spelling: state.spelling, hotkey: state.hotkey,
+    },
+  };
+  const blob = new Blob([JSON.stringify(st, null, 1)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `flexible_pokedex_quiz_${new Date().toISOString().slice(0, 10).replace(/-/g, '_')}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+async function loadState(fileObj) {
+  try {
+    const st = JSON.parse(await fileObj.text());
+    const o = st.options ?? {};
+    // opciones
+    state.shiny = !!o.shiny;
+    $('shiny').setAttribute('aria-pressed', String(state.shiny));
+    state.cycle = o.cycle !== false;
+    for (const x of $('cycle').children) x.classList.toggle('active', (x.dataset.on === '1') === state.cycle);
+    sound.enabled = o.sound !== false;
+    for (const x of $('soundopt').children) x.classList.toggle('active', (x.dataset.on === '1') === sound.enabled);
+    if (o.languages?.length) {
+      quiz.setLanguages(o.languages);
+      for (const b of $('langs').children) b.classList.toggle('active', b.textContent.split(' / ').every((l) => o.languages.includes(l)));
+    }
+    if (!!o.spelling !== state.spelling) $('spellbtn').click();
+    state.hotkey = !!o.hotkey;
+    $('shadownext').setAttribute('aria-pressed', String(state.hotkey));
+    state.minutes = st.timer?.minutes ?? 0;
+    $('timer-inf').classList.toggle('active', !state.minutes);
+    $('timer-set').classList.toggle('active', !!state.minutes);
+    if (state.minutes) $('timer-min').value = state.minutes;
+    state.mode = st.mode ?? 'regular';
+    renderModeButtons();
+    // quiz
+    const q = st.quiz;
+    if (q.layout === 'gens') { selectedGens.clear(); q.gens.forEach((g) => selectedGens.add(g)); renderGenSelection(); startGens(); }
+    else if (q.layout === 'types') startType(q.type);
+    else if (q.layout === 'special') startSpecial();
+    else startFull();
+    setShuffle(!!o.shuffle, true);
+    if (o.seed != null) quiz.seed = o.seed;
+    // aciertos (en orden, para que Chaos los coloque igual) y sombras
+    for (const base of st.named) {
+      if (!quiz.bases.has(base) || quiz.named.has(base)) continue;
+      quiz.named.add(base);
+      showNamed(base, '');
+    }
+    quiz.pickType();
+    quiz.uniqueNamed = new Set(st.uniqueNamed ?? []);
+    quiz.langCounts = st.langCounts ?? {};
+    quiz.pickLanguage();
+    for (const [box, base] of st.shadows ?? []) {
+      const sl = slots.find((x) => x.box === box && x.base === base);
+      if (sl && !sl.state) revealShadow(sl);
+    }
+    renderScore();
+    renderTheme();
+    // temporizador
+    state.elapsed = st.timer?.elapsed ?? 0;
+    state.started = !!st.timer?.started;
+    renderTimer();
+    if (st.giveup) giveUp();
+    else if (quiz.complete) finish();
+    else if (state.started) startTimer();
+    state.paused = false;
+    setPaused(!!st.paused);
+    showMessage(`Successfully loaded quiz [${current.name.toLowerCase()}]`);
+  } catch (err) {
+    console.error('Failed to load file:', err);
+    showMessage('Failed loading file');
+  }
 }
 
 // ------------------------------------------------------------ modo oscuro
@@ -721,6 +831,20 @@ function bindEvents() {
   $('shadowauto').onclick = toggleAutoShadow;
   $('spooky').onclick = () => { state.spooky = false; $('spooky').hidden = true; };
   $('darkmode').onclick = () => setDark(!document.documentElement.dataset.dark);
+  $('pause').onclick = () => setPaused(true);
+  $('unpause').onclick = () => setPaused(false);
+  $('savestate').onclick = saveState;
+  $('loadstate').onclick = () => $('fileinput').click();
+  $('fileinput').onchange = () => {
+    if ($('fileinput').files.length) loadState($('fileinput').files[0]);
+    $('fileinput').value = '';
+  };
+  // También se puede cargar arrastrando el archivo a la página
+  document.addEventListener('dragover', (ev) => ev.preventDefault());
+  document.addEventListener('drop', (ev) => {
+    ev.preventDefault();
+    if (ev.dataTransfer.files.length) loadState(ev.dataTransfer.files[0]);
+  });
   $('reset').onclick = resetBoard;
   $('congrats').onclick = () => { $('congrats').hidden = true; };
   $('accordion').onclick = () => {

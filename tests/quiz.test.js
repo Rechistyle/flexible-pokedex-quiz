@@ -97,4 +97,14 @@ for (let i = 0; i < 5; i++) {
   assert.equal(q6.guess(data.species[ok.base].name).ok, true);
 }
 
+// Multijugador: el invitado solo comprueba; el anfitrión acepta una vez
+const q7 = new Quiz(data);
+q7.setQuiz('Full', data.entries);
+const dry = q7.guess('pikachu', false);
+assert.equal(dry.ok, true);
+assert.equal(q7.score, 0);
+assert.equal(q7.accept('pikachu').ok, true);
+assert.equal(q7.accept('pikachu'), null);
+assert.equal(q7.score, 1);
+
 console.log('OK');

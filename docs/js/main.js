@@ -1,6 +1,7 @@
 // Interfaz: conecta la lógica del quiz (quiz.js) con la página.
 import { Quiz } from './quiz.js';
 import { play, sound } from './sound.js';
+import { createNet } from './multiplayer.js';
 
 const $ = (id) => document.getElementById(id);
 const input = $('pokemon');
@@ -61,7 +62,15 @@ async function init() {
   state.spooky = today.getMonth() === 9 && today.getDate() >= 25; // del 25 al 31 de octubre
   startSpooky();
   $('loading').hidden = true;
-  $('menu').hidden = false;
+  const room = new URLSearchParams(location.search).get('room');
+  if (room) {
+    // Invitado: nombre y a esperar el estado del anfitrión
+    document.body.classList.add('guest');
+    $('start').hidden = true;
+    askUsername(true, (name) => net.join(room, name));
+  } else {
+    $('menu').hidden = false;
+  }
 }
 
 // layout: 'full' (5 columnas), 'gens' (cajas a lo ancho), 'types' o 'special' (cajas por categoría)
@@ -340,6 +349,9 @@ function resetBoard() {
   state.missingno = false;
   state.lastTyped = '';
   setPaused(false);
+  if (net.role === 'host') net.resetScores();
+  $('leaderboard-panel').hidden = true;
+  syncSoon();
   for (const timeout of revealTimeouts) clearTimeout(timeout);
   revealTimeouts = [];
   $('missednames').hidden = true;
@@ -377,7 +389,8 @@ function onInput() {
   }
   if (value.endsWith(',')) {
     input.value = value.slice(0, -1);
-    if (state.hotkey) revealNextShadow();
+    if (net.role === 'guest') showMessage('The player hosting the quiz has control over the quiz settings');
+    else if (state.hotkey) revealNextShadow();
     else showMessage('Shadow hotkey is not enabled');
     return;
   }
@@ -388,22 +401,31 @@ function onInput() {
     missingnoGlitch();
     return;
   }
-  const result = quiz.guess(value);
+  // Un invitado solo comprueba el nombre: el anfitrión decide si cuenta y avisa a todos
+  const guest = net.role === 'guest';
+  const result = quiz.guess(value, !guest);
   if (result.ok) {
     input.value = '';
-    showNamed(result.base);
     hideHint();
     state.lastTyped = '';
-    play('correct');
-    if (!state.started) startTimer();
-    renderScore();
-    renderTheme();
-    if (quiz.complete) finish();
+    if (guest) return net.sendGuess(result.base, result.unique);
+    onNamed(result.base);
+    net.announce(result.base, net.username);
   } else if (result.message) {
     input.value = '';
     if (result.message.includes('not the next')) play('wrong');
     showMessage(result.message);
   }
+}
+
+// Un acierto confirmado (propio, de un invitado o recibido del anfitrión)
+function onNamed(base) {
+  showNamed(base);
+  play('correct');
+  if (!state.started) startTimer();
+  renderScore();
+  renderTheme();
+  if (quiz.complete) finish();
 }
 
 function showNamed(base, cls = 'zoom') {
@@ -483,6 +505,8 @@ function requestTimer(minutes) {
 function giveUp() {
   if (state.over) return;
   state.over = true;
+  syncSoon();
+  showLeaderboard();
   stopTimer();
   renderTimer();
   input.disabled = true;
@@ -494,6 +518,7 @@ function giveUp() {
 
 function finish() {
   state.over = true;
+  showLeaderboard();
   stopTimer();
   renderTimer();
   input.disabled = true;
@@ -551,6 +576,7 @@ function renderMissedLang() {
 function revealShadow(slot) {
   slot.shadow = true;
   renderSlot(slot);
+  syncSoon();
 }
 
 // Todas las sombras a la vez ("Reveal shadows?")
@@ -618,6 +644,7 @@ function setShuffle(on, silent = false) {
   quiz.setShuffle(on);
   for (const b of $('shuffle').children) b.classList.toggle('active', (b.dataset.on === '1') === on);
   if (current) renderTheme();
+  syncSoon();
   if (!silent) showMessage(on ? 'Enabled type shuffle mode.' : 'Disabled type shuffle mode.');
 }
 
@@ -656,13 +683,14 @@ function setPaused(on) {
   $('pause-overlay').hidden = !on;
   input.disabled = on || state.over;
   if (!on) input.focus();
+  syncSoon();
 }
 
-function saveState() {
-  if (!current) return showMessage('Start a quiz first');
-  const st = {
+// Estado completo de la partida (para guardar en archivo y para mandarlo a los invitados)
+function gameState() {
+  return {
     version: 1,
-    quiz: { name: current.name, layout: current.layout, type: current.layout === 'types' ? current.theme : null, gens: current.gens ?? null },
+    quiz: current && { name: current.name, layout: current.layout, type: current.layout === 'types' ? current.theme : null, gens: current.gens ?? null },
     mode: state.mode,
     named: [...quiz.named],
     uniqueNamed: [...quiz.uniqueNamed],
@@ -675,7 +703,13 @@ function saveState() {
       shiny: state.shiny, cycle: state.cycle, sound: sound.enabled, shuffle: quiz.shuffle, seed: quiz.seed,
       languages: quiz.languages, spelling: state.spelling, hotkey: state.hotkey,
     },
+    scores: net.scores,
   };
+}
+
+function saveState() {
+  if (!current) return showMessage('Start a quiz first');
+  const st = gameState();
   const blob = new Blob([JSON.stringify(st, null, 1)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -686,9 +720,19 @@ function saveState() {
 
 async function loadState(fileObj) {
   try {
-    const st = JSON.parse(await fileObj.text());
-    const o = st.options ?? {};
-    // opciones
+    applyState(JSON.parse(await fileObj.text()), true);
+    showMessage(`Successfully loaded quiz [${current.name.toLowerCase()}]`);
+  } catch (err) {
+    console.error('Failed to load file:', err);
+    showMessage('Failed loading file');
+  }
+}
+
+// personal = true al cargar un archivo (también aplica shiny, sonido, idiomas…);
+// los invitados solo reciben lo que controla el anfitrión
+function applyState(st, personal) {
+  const o = st.options ?? {};
+  if (personal) {
     state.shiny = !!o.shiny;
     $('shiny').setAttribute('aria-pressed', String(state.shiny));
     state.cycle = o.cycle !== false;
@@ -702,6 +746,10 @@ async function loadState(fileObj) {
     if (!!o.spelling !== state.spelling) $('spellbtn').click();
     state.hotkey = !!o.hotkey;
     $('shadownext').setAttribute('aria-pressed', String(state.hotkey));
+  }
+  {
+    if (!st.quiz) { $('start').hidden = false; $('waiting').hidden = false; $('menu').hidden = true; return; }
+    $('waiting').hidden = true;
     state.minutes = st.timer?.minutes ?? 0;
     $('timer-inf').classList.toggle('active', !state.minutes);
     $('timer-set').classList.toggle('active', !!state.minutes);
@@ -741,11 +789,95 @@ async function loadState(fileObj) {
     else if (state.started) startTimer();
     state.paused = false;
     setPaused(!!st.paused);
-    showMessage(`Successfully loaded quiz [${current.name.toLowerCase()}]`);
-  } catch (err) {
-    console.error('Failed to load file:', err);
-    showMessage('Failed loading file');
   }
+}
+
+// ------------------------------------------------------------ multijugador
+
+const net = createNet({
+  getState: gameState,
+  applyState: (st) => applyState(st, false),
+  // El anfitrión valida el acierto de un invitado
+  onGuestGuess: (base, unique, user) => {
+    if (state.over || state.paused || !quiz.accept(base, unique)) return;
+    onNamed(base);
+    net.announce(base, user);
+  },
+  applyNamed: (base) => {
+    if (quiz.named.has(base)) return;
+    if (!quiz.accept(base)) quiz.add(base); // el anfitrión manda
+    onNamed(base);
+  },
+  message: showMessage,
+  sound: play,
+  onScores: renderScores,
+  onRoomCreated: () => {
+    $('host').hidden = true;
+    $('copylink').hidden = false;
+    copyInvite();
+  },
+  onJoined: () => { $('userprompt').hidden = true; },
+  onNameTaken: () => { showMessage('Username already taken'); $('userprompt').hidden = false; },
+  onClosed: (text) => {
+    $('return-message').textContent = text;
+    $('return-overlay').hidden = false;
+    input.disabled = true;
+  },
+});
+
+// Los cambios del anfitrión se agrupan y se mandan una vez
+let syncQueued = false;
+function syncSoon() {
+  if (net.role !== 'host' || syncQueued) return;
+  syncQueued = true;
+  queueMicrotask(() => { syncQueued = false; net.sync(); });
+}
+
+function copyInvite() {
+  const link = net.inviteLink();
+  navigator.clipboard?.writeText(link).catch(() => {});
+  showMessage(`Copied link to clipboard (${link})`);
+}
+
+const sortedScores = () => Object.entries(net.scores).sort((a, b) => b[1] - a[1]);
+
+function renderScores() {
+  const list = sortedScores();
+  $('ranking').hidden = list.length < 2;
+  $('top3').replaceChildren(...list.slice(0, 3).map(([name, n], i) => {
+    const el = document.createElement('span');
+    el.textContent = `#${i + 1} ${name} (${n})`;
+    return el;
+  }));
+  if (!$('leaderboard-panel').hidden) showLeaderboard();
+}
+
+// Clasificación completa al terminar (si hay más de un jugador)
+function showLeaderboard() {
+  const list = sortedScores();
+  if (list.length < 2) return;
+  $('leaderboard').replaceChildren(...list.map(([name, n], i) => {
+    const row = document.createElement('div');
+    row.className = 'row-entry' + (name === net.username ? ' me' : '');
+    row.textContent = `#${i + 1}  ${name}  ${n}`;
+    return row;
+  }));
+  $('leaderboard-panel').hidden = false;
+}
+
+function askUsername(isGuest, onSet) {
+  $('host-info').hidden = isGuest;
+  $('guest-info').hidden = !isGuest;
+  $('userprompt').hidden = false;
+  $('username').focus();
+  const submit = () => {
+    const name = $('username').value.trim();
+    if (name.length < 2) return showMessage('Username should be at least 2 characters long');
+    if (!isGuest) $('userprompt').hidden = true;
+    onSet(name);
+  };
+  $('username-set').onclick = submit;
+  $('username').onkeydown = (ev) => { if (ev.key === 'Enter') submit(); };
 }
 
 // ------------------------------------------------------------ modo oscuro
@@ -774,7 +906,7 @@ function bindEvents() {
   input.addEventListener('input', onInput);
   document.addEventListener('keydown', (ev) => {
     if (ev.key === 'Enter') input.value = '';
-    if (document.activeElement?.tagName !== 'INPUT') input.focus();
+    if (document.activeElement?.tagName !== 'INPUT' && $('userprompt').hidden) input.focus();
   });
   $('start-full').onclick = () => requestQuiz(startFull);
   $('fullquiz').onclick = () => requestQuiz(startFull);
@@ -832,6 +964,14 @@ function bindEvents() {
   $('spooky').onclick = () => { state.spooky = false; $('spooky').hidden = true; };
   $('darkmode').onclick = () => setDark(!document.documentElement.dataset.dark);
   $('pause').onclick = () => setPaused(true);
+  $('host').onclick = () => askUsername(false, (name) => net.host(name));
+  $('copylink').onclick = copyInvite;
+  $('return').onclick = () => { location.href = location.pathname; };
+  $('accordion2').onclick = () => {
+    const open = $('accordion2').getAttribute('aria-expanded') !== 'true';
+    $('accordion2').setAttribute('aria-expanded', String(open));
+    $('leaderboard').hidden = !open;
+  };
   $('unpause').onclick = () => setPaused(false);
   $('savestate').onclick = saveState;
   $('loadstate').onclick = () => $('fileinput').click();

@@ -187,8 +187,9 @@ export class Quiz {
     return false;
   }
 
-  // Comprueba lo escrito. Devuelve { ok, base, ids, message }.
-  guess(raw) {
+  // Comprueba lo escrito. Devuelve { ok, base, ids, message, unique }.
+  // Con commit = false solo comprueba (un invitado espera a que el anfitrión lo confirme).
+  guess(raw, commit = true) {
     let candidates = [];
     if (NIDORAN.includes(raw.toLowerCase())) {
       // "Nidoran" a secas: primero la hembra y, si ya está, el macho
@@ -220,6 +221,7 @@ export class Quiz {
           return { ok: false, base, ids: [], message: `${this.uniqueName(uniqueId)} revealed!` };
         }
         if (!this.isNext(base) || !this.hasCurrentType(base)) continue;
+        if (!commit) return { ok: true, base, ids: [], message: null, unique: uniqueId };
         this.uniqueNamed.add(uniqueId);
         this.countLang(key);
         return this.add(base);
@@ -243,10 +245,18 @@ export class Quiz {
         if (!this.isPrefix(key, this.nameDict.keys())) message = `${this.speciesName(base)} is not ${this.currentType.charAt(0).toUpperCase()}${this.currentType.slice(1)}`;
         continue;
       }
+      if (!commit) return { ok: true, base, ids: [], message: null };
       this.countLang(key);
       return this.add(base);
     }
     return { ok: false, base: null, ids: [], message };
+  }
+
+  // El anfitrión vuelve a comprobar el acierto de un invitado (alguien pudo adelantarse)
+  accept(base, unique) {
+    if (!this.bases.has(base) || this.named.has(base) || !this.isNext(base) || !this.hasCurrentType(base)) return null;
+    if (unique && this.data.uniqueForms[unique]?.base === base) this.uniqueNamed.add(unique);
+    return this.add(base);
   }
 
   // En Dex Order solo vale el siguiente al último acertado

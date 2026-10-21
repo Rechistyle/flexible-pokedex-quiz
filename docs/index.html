@@ -7,6 +7,7 @@
   <meta name="description" content="Name every Pokémon. Pick any combination of generations.">
   <link rel="icon" href="sprites/unknown.png">
   <link rel="stylesheet" href="css/style.css">
+  <script src="js/vendor/peerjs.min.js"></script>
   <script type="module" src="js/main.js"></script>
 </head>
 <body>
@@ -29,6 +30,18 @@
       <button id="hintbox" class="box hintbox"><span id="clicktype">click to reveal</span><span id="hint" hidden></span></button>
     </div>
 
+    <div id="ranking" class="box lime ranking" hidden>
+      <div>Current Top 3:</div>
+      <div id="top3"></div>
+    </div>
+
+    <section id="leaderboard-panel" hidden>
+      <div class="box missed-head">
+        <button id="accordion2" class="accordion" aria-expanded="true">Leaderboard: <i class="arrow"></i></button>
+      </div>
+      <div id="leaderboard" class="box"></div>
+    </section>
+
     <section id="missednames" hidden>
       <div class="box missed-head">
         <button id="accordion" class="accordion" aria-expanded="true">Missed names: <i class="arrow"></i></button>
@@ -40,18 +53,18 @@
     <div id="boxes"></div>
 
     <div id="controls">
-      <div class="row">
+      <div class="row host-only">
         <button id="giveup" class="button">Give Up</button>
         <button id="reset" class="button">Reset</button>
       </div>
       <div class="row">
-        <div class="box option quizbar">
+        <div class="box option quizbar host-only">
           <button id="fullquiz" class="link">Full Quiz</button>
           <button id="open-gens" class="link">Generations</button>
           <button id="open-types-bar" class="link">Types</button>
           <button id="special" class="link">Special Quiz</button>
         </div>
-        <div class="box option">
+        <div class="box option host-only">
           Mode:
           <div class="segmented" id="modes">
             <button class="link" data-mode="chaos">Chaos</button>
@@ -61,7 +74,7 @@
         </div>
       </div>
       <div class="row">
-        <div class="box option">
+        <div class="box option host-only">
           Timer:
           <button class="link active" id="timer-inf">∞</button>
           <input type="number" id="timer-min" min="1" max="999" value="35" aria-label="Minutes">
@@ -69,7 +82,7 @@
           <button class="link" id="timer-set">set</button>
           <button class="link key" id="pause" title="Pause" aria-label="Pause">⏸</button>
         </div>
-        <div class="box option">
+        <div class="box option host-only">
           Type-Shuffle:
           <div class="segmented" id="shuffle"><button class="link" data-on="1">on</button><button class="link active" data-on="0">off</button></div>
         </div>
@@ -77,8 +90,8 @@
       <div class="row">
         <button id="shiny" class="button icon-btn" title="Shiny sprites" aria-pressed="false">✦</button>
         <button id="spellbtn" class="box option link-box" aria-pressed="false">Spelling Help</button>
-        <button id="shadows" class="box option link-box">Shadows</button>
-        <div class="box option">
+        <button id="shadows" class="box option link-box host-only">Shadows</button>
+        <div class="box option host-only">
           Next Shadow: press <button class="link key" id="shadownext" aria-pressed="false">,</button>
           or activate <button class="link" id="shadowauto" aria-pressed="false">AUTO 20s</button>
         </div>
@@ -94,6 +107,8 @@
       </div>
       <div class="row">
         <div class="box option langs" id="langs"></div>
+        <button id="host" class="box option link-box">Multiplayer Invite</button>
+        <button id="copylink" class="box option link-box" hidden>Copy Invite Link</button>
       </div>
     </div>
   </main>
@@ -113,6 +128,7 @@
         <h2>Loading Quiz</h2>
         <div class="dots"><span></span><span></span><span></span></div>
       </div>
+      <h2 id="waiting" hidden>Waiting for the host to pick a quiz…</h2>
       <div id="menu" hidden>
         <button class="button big" id="start-full">Full quiz</button>
         <p class="hint">Pick one or more generations:</p>
@@ -134,11 +150,28 @@
   <div id="pause-overlay" class="overlay paused-overlay" hidden>
     <div class="prompt">
       <h2>Paused</h2>
-      <button id="unpause" class="button">Resume</button>
+      <button id="unpause" class="button host-only">Resume</button>
       <p>Save/Load Quiz State:</p>
       <button id="savestate" class="button" title="Download quiz state">⬇ Save</button>
-      <button id="loadstate" class="button" title="Load quiz state from file">⬆ Load</button>
+      <button id="loadstate" class="button host-only" title="Load quiz state from file">⬆ Load</button>
       <input type="file" id="fileinput" accept=".json,.quiz,application/json" hidden>
+    </div>
+  </div>
+
+  <div id="userprompt" class="overlay" hidden>
+    <div class="prompt">
+      <h2>Set your temporary username</h2>
+      <p id="host-info" hidden>This will create an invite link,<br>which you can share to let other players join.</p>
+      <p id="guest-info" hidden>You are joining a multiplayer quiz.<br>The player hosting the quiz has control over the quiz settings.</p>
+      <input type="text" id="username" maxlength="25" autocomplete="off" placeholder="username">
+      <button id="username-set" class="button">set</button>
+    </div>
+  </div>
+
+  <div id="return-overlay" class="overlay" hidden>
+    <div class="prompt">
+      <h2 id="return-message"></h2>
+      <button id="return" class="button">Exit</button>
     </div>
   </div>
 

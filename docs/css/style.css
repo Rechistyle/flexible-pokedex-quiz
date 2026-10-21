@@ -320,3 +320,13 @@ body:not([data-mode="regular"]) .column { width: 100%; }
 /* Pausa: el tablero se oculta */
 body.paused #boxes, body.paused #missednames { visibility: hidden; }
 .paused-overlay { background: rgba(16, 17, 14, 0.85); }
+
+/* ------------------------------------------------------------ multijugador */
+
+body.guest .host-only { opacity: 0.45; pointer-events: none; }
+.ranking { display: inline-flex; gap: 10px; margin: 10px 0 0 10px; }
+#top3 span { margin-right: 10px; }
+#leaderboard-panel { margin: 10px 10px 0; }
+#leaderboard .row-entry { display: flex; gap: 10px; padding: 3px 6px; }
+#leaderboard .me { font-weight: bold; }
+#username { font: inherit; font-size: 18px; padding: 4px 8px; border: 2px solid var(--lime); border-radius: 4px; background: var(--muted); color: var(--text); }

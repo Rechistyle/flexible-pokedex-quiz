@@ -282,3 +282,37 @@ body:not([data-mode="regular"]) .column { width: 100%; }
 .section h3:empty { display: none; }
 .segmented { display: inline-flex; border: 2px solid var(--lime); border-radius: 6px; overflow: hidden; }
 .segmented .link { border-radius: 0; }
+
+/* ------------------------------------------------------------ opciones */
+
+.icon-btn { min-width: 0; width: 46px; padding: 8px 0; font-size: 20px; line-height: 1; }
+#header .icon-btn { align-self: stretch; }
+#shiny[aria-pressed="true"] { background: #ffcc33; color: #8a5a00; }
+.link-box { border: 0; cursor: pointer; }
+.link-box[aria-pressed="true"], .link[aria-pressed="true"] { background: var(--lime); color: var(--on-lime); }
+.key { border: 2px solid var(--lime); min-width: 26px; font-weight: bold; }
+#timer-min { width: 58px; font: inherit; padding: 2px 4px; border: 2px solid var(--lime); border-radius: 4px; background: var(--muted); color: var(--text); }
+
+.slot img.shadow, .missed img.shadow { filter: brightness(0); opacity: 0.75; }
+.slot img.spooky { object-fit: none; }
+
+.spelling { display: flex; flex-wrap: wrap; gap: 0; margin: 10px 10px 0; }
+.spelling .box.lime { border-radius: 3px 0 0 20px; }
+.hintbox { border: 2px solid var(--lime); border-radius: 0 20px 3px 0; min-width: 140px; font: inherit; color: var(--text); cursor: pointer; }
+#hint { font-weight: bold; }
+
+/* ------------------------------------------------------------ modo oscuro */
+
+[data-dark="1"] {
+  --text: #eee;
+  --card: rgba(24, 24, 24, 0.9);
+  --muted: #333;
+  --bg: linear-gradient(160deg, #1f2419 0%, #263018 55%, #2f4219 100%);
+}
+[data-dark="1"] body { color: var(--text); }
+[data-dark="1"] body[data-theme]:not([data-theme=""]) {
+  background: linear-gradient(160deg, color-mix(in srgb, var(--lime) 15%, #111) 0%, color-mix(in srgb, var(--lime) 35%, #111) 100%) fixed;
+}
+[data-dark="1"] .genbtn { background: #222; }
+[data-dark="1"] .slot img.empty { opacity: 0.12; filter: invert(1); }
+[data-dark="1"] .slot img.shadow, [data-dark="1"] .missed img.shadow { filter: brightness(0) invert(0.6); }

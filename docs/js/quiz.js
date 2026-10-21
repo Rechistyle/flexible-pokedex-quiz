@@ -3,6 +3,21 @@ import { standardize, nameKey } from './names.js';
 
 const NIDORAN = ['nidoran', 'ニドラン', '니드런'];
 
+// Aleatorio reproducible a partir de una semilla (para que todos los jugadores vean el mismo tipo)
+const seededRandom = (x) => { const v = Math.sin(x) * 10000; return v - Math.floor(v); };
+
+export function levenshtein(a, b) {
+  let prev = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    for (let j = 1; j <= b.length; j++) {
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    }
+    prev = cur;
+  }
+  return prev[b.length];
+}
+
 export class Quiz {
   constructor(data) {
     this.data = data;
@@ -14,6 +29,8 @@ export class Quiz {
     }
     this.entries = [];
     this.bases = new Set();
+    this.shuffle = false; // Type-Shuffle
+    this.seed = Math.floor(1000 * Math.random());
     this.setLanguages(['ENG', 'ESP', 'ITA']);
     this.reset();
   }
@@ -112,6 +129,47 @@ export class Quiz {
     this.uniqueNamed = new Set();
     this.langCounts = {};
     this.pickLanguage();
+    this.pickType();
+  }
+
+  // ------------------------------------------------------------ Type-Shuffle
+
+  setShuffle(on) {
+    this.shuffle = on;
+    this.pickType();
+  }
+
+  // Tipo del momento: uno de los tipos de un Pokémon al azar que aún falte
+  pickType() {
+    this.currentType = null;
+    if (!this.shuffle) return;
+    const left = this.entries.filter((e) => !this.named.has(e.base));
+    if (!left.length) return;
+    const e = left[Math.floor(seededRandom(this.seed + this.named.size) * left.length)];
+    this.currentType = e.types.length > 1 && seededRandom(this.seed + this.named.size + 0.5) >= 0.5 ? e.types[1] : e.types[0];
+  }
+
+  hasCurrentType(base) {
+    return !this.currentType || this.entriesOf(base).some((e) => e.types.includes(this.currentType));
+  }
+
+  // ------------------------------------------------------------ Spelling Help
+
+  // Nombre más parecido a lo escrito (distancia de Levenshtein), con los mismos
+  // límites que la original según la longitud; null si no hay ninguno cercano
+  suggest(raw) {
+    const input = standardize(raw);
+    if (input.length <= 3) return null;
+    let best = null, bestDist = Infinity;
+    for (const key of this.nameDict.keys()) {
+      const d = levenshtein(key, input);
+      if (d < bestDist) { best = key; bestDist = d; }
+    }
+    const max = input.length >= 8 ? 4 : input.length === 7 ? 3 : input.length >= 5 ? 2 : 1;
+    if (bestDist > max) return null;
+    const base = this.nameDict.get(best);
+    const lang = this.langOf.get(best) ?? this.currentLang;
+    return this.data.species[base].names[lang] ?? this.data.species[base].name;
   }
 
   get score() { return this.named.size; }
@@ -161,10 +219,7 @@ export class Quiz {
           this.countLang(key);
           return { ok: false, base, ids: [], message: `${this.uniqueName(uniqueId)} revealed!` };
         }
-        if (!this.isNext(base)) {
-          if (!this.isPrefix(key, this.nameDict.keys())) message = `${this.uniqueName(uniqueId)} is not the next Pokémon`;
-          continue;
-        }
+        if (!this.isNext(base) || !this.hasCurrentType(base)) continue;
         this.uniqueNamed.add(uniqueId);
         this.countLang(key);
         return this.add(base);
@@ -182,6 +237,10 @@ export class Quiz {
       }
       if (!this.isNext(base)) {
         if (!this.isPrefix(key, this.nameDict.keys())) message = `${this.speciesName(base)} is not the next Pokémon`;
+        continue;
+      }
+      if (!this.hasCurrentType(base)) {
+        if (!this.isPrefix(key, this.nameDict.keys())) message = `${this.speciesName(base)} is not ${this.currentType.charAt(0).toUpperCase()}${this.currentType.slice(1)}`;
         continue;
       }
       this.countLang(key);
@@ -206,6 +265,7 @@ export class Quiz {
 
   add(base) {
     this.named.add(base);
+    this.pickType();
     return { ok: true, base, ids: this.entriesOf(base).map((e) => e.id), message: null };
   }
 

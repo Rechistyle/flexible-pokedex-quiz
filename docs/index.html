@@ -11,6 +11,7 @@
 </head>
 <body>
   <header id="header">
+    <button id="darkmode" class="button icon-btn" title="Light / dark mode" aria-label="Toggle dark mode">☾</button>
     <div class="box lime inputbox" id="inputbox">
       <label for="pokemon"><span class="long">Name all Pokémon:</span><span class="short">Input:</span></label>
       <input type="text" id="pokemon" maxlength="13" autocomplete="off" autocapitalize="off" spellcheck="false" disabled>
@@ -23,6 +24,11 @@
   <div id="bgicon" class="bgicon" hidden></div>
 
   <main>
+    <div id="spelling" class="spelling" hidden>
+      <div class="box lime">Most similar spelling:</div>
+      <button id="hintbox" class="box hintbox"><span id="clicktype">click to reveal</span><span id="hint" hidden></span></button>
+    </div>
+
     <section id="missednames" hidden>
       <div class="box missed-head">
         <button id="accordion" class="accordion" aria-expanded="true">Missed names: <i class="arrow"></i></button>
@@ -52,6 +58,37 @@
             <button class="link active" data-mode="regular">Regular</button>
             <button class="link" data-mode="order">Dex Order</button>
           </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="box option">
+          Timer:
+          <button class="link active" id="timer-inf">∞</button>
+          <input type="number" id="timer-min" min="1" max="999" value="35" aria-label="Minutes">
+          <span>min</span>
+          <button class="link" id="timer-set">set</button>
+        </div>
+        <div class="box option">
+          Type-Shuffle:
+          <div class="segmented" id="shuffle"><button class="link" data-on="1">on</button><button class="link active" data-on="0">off</button></div>
+        </div>
+      </div>
+      <div class="row">
+        <button id="shiny" class="button icon-btn" title="Shiny sprites" aria-pressed="false">✦</button>
+        <button id="spellbtn" class="box option link-box" aria-pressed="false">Spelling Help</button>
+        <button id="shadows" class="box option link-box">Shadows</button>
+        <div class="box option">
+          Next Shadow: press <button class="link key" id="shadownext" aria-pressed="false">,</button>
+          or activate <button class="link" id="shadowauto" aria-pressed="false">AUTO 20s</button>
+        </div>
+        <div class="box option">
+          Cycle sprites:
+          <div class="segmented" id="cycle"><button class="link active" data-on="1">on</button><button class="link" data-on="0">off</button></div>
+        </div>
+        <button id="spooky" class="box option link-box" hidden>I'm scared!</button>
+        <div class="box option">
+          Sound:
+          <div class="segmented" id="soundopt"><button class="link active" data-on="1">on</button><button class="link" data-on="0">off</button></div>
         </div>
       </div>
       <div class="row">
@@ -96,7 +133,7 @@
   <div id="confirm" class="overlay" hidden>
     <div class="prompt">
       <h2 id="confirm-title"></h2>
-      <p>Quiz and timer will reset</p>
+      <p id="confirm-text"></p>
       <button id="confirm-yes" class="button"></button>
       <button id="confirm-no" class="button">Cancel</button>
     </div>

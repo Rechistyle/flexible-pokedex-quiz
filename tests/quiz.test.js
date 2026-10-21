@@ -79,4 +79,22 @@ q5.setQuiz('Generation 6', data.entries.filter((e) => e.generation === 6), 'orde
 assert.equal(q5.maxScore, 72);
 assert.equal(q5.guess('chespin').ok, true);
 
+// Spelling Help
+const q6 = new Quiz(data);
+q6.setQuiz('Full', data.entries);
+assert.equal(q6.suggest('pikahcu'), 'Pikachu');
+assert.equal(q6.suggest('charmandr'), 'Charmander');
+assert.equal(q6.suggest('xyz'), null);
+assert.equal(q6.suggest('qqqqqqq'), null);
+
+// Type-Shuffle: solo vale el tipo del momento, que cambia tras cada acierto
+q6.setShuffle(true);
+for (let i = 0; i < 5; i++) {
+  const type = q6.currentType;
+  const ok = q6.entries.find((e) => !q6.named.has(e.base) && e.types.includes(type));
+  const wrong = q6.entries.find((e) => !q6.named.has(e.base) && !q6.entriesOf(e.base).some((x) => x.types.includes(type)));
+  assert.match(q6.guess(data.species[wrong.base].name).message ?? '', / is not /);
+  assert.equal(q6.guess(data.species[ok.base].name).ok, true);
+}
+
 console.log('OK');

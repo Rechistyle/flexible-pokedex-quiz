@@ -40,7 +40,7 @@ const selectedGens = new Set();
 const state = {
   started: false, over: false, timer: null, startTime: 0, elapsed: 0, tick: 0, missingno: false, mode: 'regular',
   minutes: 0, // 0 = cronómetro (∞); si no, cuenta atrás
-  shiny: false, cycle: true, spelling: false, hotkey: false, auto: null, autoWarn: null, spooky: false,
+  lastTyped: '', shiny: false, cycle: true, spelling: false, hotkey: false, auto: null, autoWarn: null, spooky: false,
 };
 let current = null; // quiz activo: { name, entries, layout, theme }
 let revealTimeouts = [];
@@ -337,6 +337,7 @@ function resetBoard() {
   state.over = false;
   state.elapsed = 0;
   state.missingno = false;
+  state.lastTyped = '';
   for (const timeout of revealTimeouts) clearTimeout(timeout);
   revealTimeouts = [];
   $('missednames').hidden = true;
@@ -365,6 +366,7 @@ function renderScore() {
 function onInput() {
   const value = input.value;
   if (!value.length || state.over) return;
+  state.lastTyped = value.replace(/[?,]$/, '');
   // "?" muestra la pista de Spelling Help y "," revela la siguiente sombra
   if (value.endsWith('?')) {
     input.value = value.slice(0, -1);
@@ -395,6 +397,7 @@ function onInput() {
     }
     $('recentsprite').src = spriteSrc(frameOf(baseSlots[0]).file);
     hideHint();
+    state.lastTyped = '';
     play('correct');
     if (!state.started) startTimer();
     renderScore();
@@ -589,7 +592,8 @@ function toggleAutoShadow() {
 function revealHint() {
   $('clicktype').hidden = true;
   $('hint').hidden = false;
-  $('hint').textContent = (input.value && quiz.suggest(input.value)) ?? 'not found';
+  // Si el cuadro se vació (Enter, aviso…), se usa lo último que se escribió
+  $('hint').textContent = quiz.suggest(input.value || state.lastTyped) ?? 'not found';
   input.focus();
 }
 

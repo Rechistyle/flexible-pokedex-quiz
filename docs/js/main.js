@@ -41,7 +41,7 @@ const selectedGens = new Set();
 const state = {
   started: false, over: false, timer: null, startTime: 0, elapsed: 0, tick: 0, missingno: false, mode: 'regular',
   minutes: 0, // 0 = cronómetro (∞); si no, cuenta atrás
-  paused: false, lastTyped: '', shiny: false, cycle: true, spelling: false, hotkey: false, auto: null, autoWarn: null, spooky: false,
+  paused: false, lastTyped: '', ditto: null, shiny: false, cycle: true, spelling: false, hotkey: false, auto: null, autoWarn: null, spooky: false,
 };
 let current = null; // quiz activo: { name, entries, layout, theme }
 let revealTimeouts = [];
@@ -242,7 +242,9 @@ const frameOf = (slot) => slot.frames[state.cycle ? state.tick % slot.frames.len
 
 function renderSlot(slot) {
   if (slot.state) {
-    slot.img.src = spriteSrc(frameOf(slot).file);
+    // Ditto, ya acertado, se transforma en el último Pokémon acertado (como la original)
+    const file = slot.base === 'ditto' && state.ditto && state.cycle ? state.ditto : frameOf(slot).file;
+    slot.img.src = spriteSrc(file);
   } else if (slot.shadow) {
     slot.img.src = spriteSrc(frameOf(slot).file);
     slot.img.className = 'shadow';
@@ -267,7 +269,7 @@ function cycleSprites() {
   if (!state.cycle) return;
   for (const slot of slots) {
     if (slot.frames.length < 2) continue;
-    if (slot.state || slot.shadow) slot.img.src = spriteSrc(frameOf(slot).file);
+    if (slot.state || slot.shadow) renderSlot(slot);
     if (slot.item) renderMissedItem(slot);
   }
 }
@@ -348,6 +350,7 @@ function resetBoard() {
   state.elapsed = 0;
   state.missingno = false;
   state.lastTyped = '';
+  state.ditto = null;
   setPaused(false);
   if (net.role === 'host') net.resetScores();
   $('leaderboard-panel').hidden = true;
@@ -420,12 +423,60 @@ function onInput() {
 
 // Un acierto confirmado (propio, de un invitado o recibido del anfitrión)
 function onNamed(base) {
+  const typeBefore = quiz.currentType;
   showNamed(base);
+  if (base !== 'ditto' && quiz.named.has('ditto')) {
+    state.ditto = slotsByBase.get(base)[0].frames[0].file;
+    for (const slot of slotsByBase.get('ditto') ?? []) renderSlot(slot);
+  }
   play('correct');
   if (!state.started) startTimer();
   renderScore();
   renderTheme();
+  if (quiz.currentType && quiz.currentType !== typeBefore) flashType(quiz.currentType);
   if (quiz.complete) finish();
+}
+
+// Type-Shuffle: el icono del nuevo tipo aparece un momento en el centro
+function flashType(type) {
+  const el = $('typeflash');
+  el.style.maskImage = `url(images/types/${type}.svg)`;
+  el.classList.remove('show');
+  void el.offsetWidth;
+  el.classList.add('show');
+}
+
+// Al completar el quiz, los sprites acertados caen girando por la pantalla (5,75 s)
+function spriteRain() {
+  const canvas = document.createElement('canvas');
+  canvas.className = 'rain';
+  canvas.width = document.documentElement.clientWidth;
+  canvas.height = document.documentElement.clientHeight;
+  document.body.append(canvas);
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingEnabled = false;
+  const W = 204, H = 168; // sprite a 3x
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const drops = slots.filter((sl) => sl.state === 'named').map((sl) => {
+    const img = new Image();
+    img.src = sl.img.src;
+    return { img, x: rnd(W / 2, canvas.width - W / 2), y: rnd(-3500, -1.5 * W), v: rnd(7000, 9500), a: rnd(0, 360), va: rnd(-2000, 2000) };
+  });
+  const timer = setInterval(() => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const d of drops) {
+      if (d.y > canvas.height + H) continue;
+      d.y += d.v / 1000;
+      d.v *= 1.005;
+      d.a += d.va / 1000;
+      ctx.save();
+      ctx.translate(d.x, d.y);
+      ctx.rotate(d.a * Math.PI / 180);
+      ctx.drawImage(d.img, -W / 2, -H / 2, W, H);
+      ctx.restore();
+    }
+  }, 1000 / 60);
+  setTimeout(() => { clearInterval(timer); canvas.remove(); }, 5750);
 }
 
 function showNamed(base, cls = 'zoom') {
@@ -519,6 +570,7 @@ function giveUp() {
 function finish() {
   state.over = true;
   showLeaderboard();
+  spriteRain();
   stopTimer();
   renderTimer();
   input.disabled = true;
@@ -642,6 +694,7 @@ function setShuffle(on, silent = false) {
   if (on && state.mode === 'order') return showMessage('Type shuffle mode does not work with dex order mode');
   if (on === quiz.shuffle) return;
   quiz.setShuffle(on);
+  if (on && quiz.currentType) flashType(quiz.currentType);
   for (const b of $('shuffle').children) b.classList.toggle('active', (b.dataset.on === '1') === on);
   if (current) renderTheme();
   syncSoon();

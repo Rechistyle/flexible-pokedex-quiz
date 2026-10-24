@@ -27,3 +27,16 @@ Acordadas con el usuario. Donde choquen con `SPEC.md`, manda este archivo.
 
 ## Repositorio
 - Carpeta y repositorio: `Flexible Pokedex Quiz` (en `Documents\GitHub`), publicado desde GitHub Desktop.
+
+## Diferencias que quedan con pkmnquiz.com (repaso final, fase 8)
+Todo lo de la original está implementado salvo la entrada por chat de Twitch (excluida por el SPEC,
+junto con sus easter eggs exclusivos del chat). Diferencias conscientes:
+- **Selector de generaciones múltiple** (el cambio pedido): los botones Gen 1–9 se marcan y se pulsa Start; en la original, un clic empieza esa generación.
+- **Sprites**: PokéSprite + pack de iconos de la comunidad en vez de los sprites propios de la original; algunas formas sin icono propio comparten el de su forma normal (Rotom Stereo, Marshadow Zenith, Koraidon/Miraidon alternativos, Pecharunt Shell, Kyurem Black/White Active, Urshifu Rapid Strike) y Mimikyu Busted no rota. Las formas únicas (Peakychu, etc.) se aceptan y dan la insignia, pero se muestran con el sprite de su especie.
+- **Sonidos** sintetizados en el navegador (no se pueden copiar los de la original).
+- **Iconos de tipos** de duiker101/pokemon-type-svg-icons; sin logo propio de la original.
+- **Guardar/cargar**: archivo JSON legible (`.json`); acepta también `.quiz`.
+- **Nidoran♀/♂** se muestra con el símbolo y se acepta escribirlo (la original lo ignora).
+- **Spelling Help** muestra el nombre con su formato normal (la original, normalizado en minúsculas) y usa lo último escrito si el cuadro se vació.
+- **I'm scared!**: activo del 25 al 31 de octubre (en la original es un modo de Halloween que ahora está desactivado).
+- **Multijugador** P2P (ver arriba); los invitados no pueden usar sombras ni cambiar opciones de juego. No se envían estadísticas a ningún servidor.

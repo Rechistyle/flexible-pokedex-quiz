@@ -1,5 +1,12 @@
 # Flexible Pokédex Quiz
 
+## ▶ Jugar: **<https://rechistyle.github.io/flexible-pokedex-quiz/>**
+
+Funciona en el ordenador y en el móvil, sin instalar nada. Para jugar con amigos, pulsa
+**Multiplayer Invite** y pásales el enlace que se copia.
+
+---
+
 Quiz para nombrar a todos los Pokémon, inspirado en [pkmnquiz.com](https://pkmnquiz.com/).
 Tiene las mismas opciones que la original, con un cambio: en el quiz por generaciones
 se pueden elegir **varias generaciones a la vez** (por ejemplo Gen 1 + Gen 2 + Gen 5).
@@ -15,20 +22,19 @@ Necesitas tener [Node.js](https://nodejs.org/) instalado (cualquier versión rec
 - **Cualquier sistema:** abre una terminal en esta carpeta y escribe `npm start`. Luego entra en
   <http://localhost:3000>.
 
-## Publicarlo en internet (GitHub Pages, gratis)
+## Publicación en internet (GitHub Pages, gratis)
 
-1. Sube el proyecto a GitHub (con GitHub Desktop: **Push origin**).
-2. En la página del repositorio en GitHub: **Settings → Pages**.
-3. En *Build and deployment*: Source **Deploy from a branch**, Branch **main** y carpeta **/docs** → **Save**.
-4. En un par de minutos estará en `https://TU-USUARIO.github.io/NOMBRE-DEL-REPOSITORIO/`.
+La web ya está publicada en <https://rechistyle.github.io/flexible-pokedex-quiz/> con GitHub Pages
+(Settings → Pages → rama **main**, carpeta **/docs**). Cada vez que subes cambios a GitHub
+(GitHub Desktop: **Push origin**), la web se actualiza sola en uno o dos minutos.
 
-Cada vez que subas cambios, la web se actualiza sola.
+Es gratis mientras el repositorio sea público y no hay que renovar ni mantener nada.
 
 ## Jugar con amigos (multijugador)
 
 No hace falta instalar nada ni pagar nada:
 
-1. Abre el juego **desde la dirección de GitHub Pages** (el enlace de `localhost` solo funciona en tu ordenador).
+1. Abre el juego desde **<https://rechistyle.github.io/flexible-pokedex-quiz/>** (un enlace de `localhost` solo funciona en tu ordenador).
 2. Pulsa **Multiplayer Invite**, escribe un nombre y se copia el enlace de invitación
    (también puedes pulsar **Copy Invite Link** cuando quieras).
 3. Pásales el enlace a tus amigos. Al abrirlo eligen su nombre y entran.

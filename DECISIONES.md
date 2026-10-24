@@ -23,7 +23,7 @@ Acordadas con el usuario. Donde choquen con `SPEC.md`, manda este archivo.
 - Idiomas de respuesta: ENG/ESP/ITA, FRE, GER, KOR, JPN, CHT, CHS. Se incluyen las traducciones en los datos.
 - El marcador cuenta **especies** (1025 en el Full Quiz), no casillas: escribir una especie revela todas sus formas del quiz activo.
 - Se replican tal cual las rarezas de categoría de la original (p. ej. Magearna Original Color y Miraidon Low-Power no cuentan como legendario/mítico).
-- Formas sin sprite en ninguna fuente (marcador genérico): Rotom "Stereo", Marshadow Zenith, Koraidon Limited Build, Miraidon Low-Power Mode, Pecharunt "Shell".
+- Formas sin icono en ninguna fuente (Rotom "Stereo", Marshadow Zenith, Koraidon Limited Build, Miraidon Low-Power Mode, Pecharunt "Shell"): usan el sprite de su forma normal (decidido con el usuario).
 
 ## Repositorio
 - Carpeta y repositorio: `Flexible Pokedex Quiz` (en `Documents\GitHub`), publicado desde GitHub Desktop.
